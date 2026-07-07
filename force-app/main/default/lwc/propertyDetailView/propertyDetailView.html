@@ -1,0 +1,23 @@
+<template>
+    <div>
+        <template if:true={property}>
+            <h2>{property.propertyName}</h2>
+            <p>Project: {property.projectName}</p>
+            <p>Type: {property.propertyType}</p>
+            <p>Area: {property.areaSqft} sqft</p>
+            <p>Bedrooms: {property.bedrooms}</p>
+            <p>Price: {property.price}</p>
+            <p>Status: {property.status}</p>
+
+            <h3>Images</h3>
+            <template for:each={property.imageUrls} for:item="img">
+                <p key={img}>{img}</p>
+                <img key={img} src={img} width="200"/>
+            </template>
+        </template>
+
+        <template if:true={error}>
+            <p>Error: {error}</p>
+        </template>
+    </div>
+</template>

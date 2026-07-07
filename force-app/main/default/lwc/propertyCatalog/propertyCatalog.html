@@ -1,0 +1,28 @@
+<template>
+    <div>
+        <h2>Available Properties</h2>
+
+        <template if:true={properties}>
+            <template for:each={properties} for:item="prop">
+                <div key={prop.propertyId} data-id={prop.propertyId} onclick={handlePropertyClick}>
+                    <template if:true={prop.thumbnailUrl}>
+                        <img src={prop.thumbnailUrl} alt={prop.propertyName} width="150"/>
+                    </template>
+                    <template if:false={prop.thumbnailUrl}>
+                        <p>No image available</p>
+                    </template>
+                    <p>Name: {prop.propertyName}</p>
+                    <p>Type: {prop.propertyType}</p>
+                    <p>Area: {prop.areaSqft} sqft</p>
+                    <p>Price: {prop.price}</p>
+                    <p>Status: {prop.status}</p>
+                    <hr/>
+                </div>
+            </template>
+        </template>
+
+        <template if:true={error}>
+            <p>Error: {error}</p>
+        </template>
+    </div>
+</template>

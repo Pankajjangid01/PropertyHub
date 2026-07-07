@@ -1,0 +1,112 @@
+public with sharing class PropertyPortalController {
+
+    public class PropertyWrapper {
+        @AuraEnabled public Id propertyId;
+        @AuraEnabled public String propertyName;
+        @AuraEnabled public String propertyType;
+        @AuraEnabled public Decimal areaSqft;
+        @AuraEnabled public Decimal price;
+        @AuraEnabled public String status;
+        @AuraEnabled public String thumbnailUrl;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<PropertyWrapper> getAvailableProperties() {
+
+        List<Property__c> properties = [
+            SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Status__c
+            FROM Property__c
+            WHERE Status__c = 'Available'
+            ORDER BY CreatedDate DESC
+        ];
+
+        List<PropertyWrapper> result = new List<PropertyWrapper>();
+
+        if (properties.isEmpty()) {
+            return result;
+        }
+
+        Set<Id> propertyIds = new Set<Id>();
+        for (Property__c p : properties) {
+            propertyIds.add(p.Id);
+        }
+
+        Map<Id, String> propertyIdToThumbnailUrl = new Map<Id, String>();
+
+        if (!propertyIds.isEmpty()) {
+            List<ContentDocumentLink> links = [
+                SELECT LinkedEntityId, ContentDocument.LatestPublishedVersionId, ContentDocument.CreatedDate
+                FROM ContentDocumentLink
+                WHERE LinkedEntityId IN :propertyIds
+            ];
+            
+            for (ContentDocumentLink cdl : links) {
+                Boolean alreadyHasThumbnail = propertyIdToThumbnailUrl.containsKey(cdl.LinkedEntityId);
+                if (alreadyHasThumbnail == false) {
+                    String fileUrl = '/sfc/servlet.shepherd/version/download/' + cdl.ContentDocument.LatestPublishedVersionId;
+                    propertyIdToThumbnailUrl.put(cdl.LinkedEntityId, fileUrl);
+                }
+            }
+        }
+
+        for (Property__c p : properties) {
+            PropertyWrapper pw = new PropertyWrapper();
+            pw.propertyId = p.Id;
+            pw.propertyName = p.Name;
+            pw.propertyType = p.Property_Type__c;
+            pw.areaSqft = p.Area_Sqft__c;
+            pw.price = p.Price__c;
+            pw.status = p.Status__c;
+            pw.thumbnailUrl = propertyIdToThumbnailUrl.get(p.Id);
+            result.add(pw);
+        }
+
+        return result;
+    }
+
+    public class PropertyDetailWrapper {
+        @AuraEnabled public String propertyName;
+        @AuraEnabled public String propertyType;
+        @AuraEnabled public Decimal areaSqft;
+        @AuraEnabled public Decimal price;
+        @AuraEnabled public Decimal bedrooms;
+        @AuraEnabled public String status;
+        @AuraEnabled public String projectName;
+        @AuraEnabled public List<String> imageUrls;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static PropertyDetailWrapper getPropertyDetail(Id propertyId) {
+
+        Property__c prop = [
+            SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Bedrooms__c, Status__c, Property_Project__r.Name
+            FROM Property__c
+            WHERE Id = :propertyId
+            LIMIT 1
+        ];
+
+        PropertyDetailWrapper detail = new PropertyDetailWrapper();
+        detail.propertyName = prop.Name;
+        detail.propertyType = prop.Property_Type__c;
+        detail.areaSqft = prop.Area_Sqft__c;
+        detail.price = prop.Price__c;
+        detail.bedrooms = prop.Bedrooms__c;
+        detail.status = prop.Status__c;
+        detail.projectName = prop.Property_Project__r.Name;
+
+        List<String> images = new List<String>();
+        List<ContentDocumentLink> links = [
+            SELECT ContentDocument.LatestPublishedVersionId
+            FROM ContentDocumentLink
+            WHERE LinkedEntityId = :propertyId
+        ];
+
+        for (ContentDocumentLink cdl : links) {
+            String fileUrl = '/sfc/servlet.shepherd/version/download/' + cdl.ContentDocument.LatestPublishedVersionId;
+            images.add(fileUrl);
+        }
+        detail.imageUrls = images;
+
+        return detail;
+    }
+}

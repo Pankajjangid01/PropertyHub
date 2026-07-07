@@ -1,0 +1,20 @@
+<template>
+    <div>
+        <h3>Request a Site Visit</h3>
+
+        <template if:false={isSuccess}>
+            <label>Preferred Date & Time:</label>
+            <input type="datetime-local" onchange={handleDateTimeChange}/>
+            <br/>
+            <button onclick={handleSubmit}>Submit Request</button>
+        </template>
+
+        <template if:true={isSuccess}>
+            <p>✅ Your site visit request has been submitted successfully.</p>
+        </template>
+
+        <template if:true={error}>
+            <p>Error: {error}</p>
+        </template>
+    </div>
+</template>
