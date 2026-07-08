@@ -29,6 +29,9 @@ public with sharing class QuotationPdfService {
         cdl.Visibility = 'AllUsers';
         insert cdl;
 
+        // NEW — mark PDF as generated so the "Sent" status becomes eligible
+        update new Quotation__c(Id = quotationId, PDF_Generated__c = true);
+
         return insertedCv.ContentDocumentId;
     }
 }

@@ -1,0 +1,176 @@
+:host {
+    display: block;
+    --ph-brand: #7a3468;
+    --ph-brand-deep: #5f2852;
+    --ph-brand-light: #f6ecf3;
+    --ph-surface: #ffffff;
+    --ph-border: #e6e8ee;
+    --ph-text: #243041;
+    --ph-muted: #5d6675;
+}
+
+.site-header {
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--ph-border);
+    border-radius: 1rem;
+    padding: 0.85rem 1.75rem;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    margin: 1rem auto 1.5rem;
+    max-width: 1400px;
+    z-index: 99;
+}
+
+.brand-panel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+}
+
+.logo-icon {
+    font-size: 1.4rem;
+}
+
+.brand-title {
+    color: var(--ph-brand-deep);
+    font-size: 1.4rem;
+    font-weight: 800;
+    margin: 0;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--ph-brand-deep) 0%, var(--ph-brand) 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.header-actions {
+    gap: 1.5rem;
+}
+
+.menu-links {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.menu-link {
+    background: transparent;
+    border: 0;
+    color: var(--ph-text);
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 0.95rem;
+    font-weight: 600;
+    padding: 0.4rem 0.2rem;
+    position: relative;
+    transition: color 0.25s ease;
+}
+
+.menu-link::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background-color: var(--ph-brand);
+    transition: width 0.25s ease;
+}
+
+.menu-link:hover {
+    color: var(--ph-brand);
+}
+
+.menu-link:hover::after {
+    width: 100%;
+}
+
+.menu-link:focus {
+    color: var(--ph-brand);
+    outline: none;
+}
+
+.login-btn-custom :deep(.slds-button_neutral) {
+    border-color: var(--ph-brand);
+    color: var(--ph-brand);
+    font-weight: 700;
+    border-radius: 20px;
+    padding-left: 1.25rem;
+    padding-right: 1.25rem;
+    transition: all 0.25s ease;
+}
+
+.login-btn-custom :deep(.slds-button_neutral:hover) {
+    background-color: var(--ph-brand);
+    color: #ffffff;
+    border-color: var(--ph-brand);
+    box-shadow: 0 4px 12px rgba(122, 52, 104, 0.25);
+}
+
+.coming-soon-toast {
+    background-color: var(--ph-brand);
+    color: #ffffff;
+    font-weight: 600;
+    font-size: 0.95rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: 12px;
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    box-shadow: 0 10px 25px rgba(122, 52, 104, 0.3);
+    z-index: 9999;
+    animation: slideIn 0.3s ease forwards;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .site-header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+        align-items: stretch;
+    }
+
+    .brand-panel {
+        justify-content: center;
+    }
+
+    .header-actions {
+        flex-direction: column;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .menu-links {
+        flex-direction: column;
+        gap: 0.75rem;
+        width: 100%;
+    }
+
+    .menu-link {
+        width: 100%;
+        text-align: center;
+    }
+
+    .login-btn-custom {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+    }
+
+    .login-btn-custom :deep(.slds-button_neutral) {
+        width: 100%;
+    }
+}

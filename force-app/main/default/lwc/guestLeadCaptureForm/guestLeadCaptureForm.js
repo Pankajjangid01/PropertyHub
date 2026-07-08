@@ -1,4 +1,5 @@
-import { LightningElement, api } from 'lwc';
+import { LightningElement, api, wire } from 'lwc';
+import { CurrentPageReference } from 'lightning/navigation';
 import submitEnquiry from '@salesforce/apex/GuestLeadCaptureController.submitEnquiry';
 
 export default class GuestLeadCaptureForm extends LightningElement {
@@ -14,6 +15,13 @@ export default class GuestLeadCaptureForm extends LightningElement {
 
     isSuccess = false;
     error;
+
+    @wire(CurrentPageReference)
+    getPageRef(pageRef) {
+        if (pageRef && pageRef.state && pageRef.state.recordId) {
+            this.propertyId = pageRef.state.recordId;
+        }
+    }
 
     get salutationOptions() {
         return [
@@ -49,7 +57,6 @@ export default class GuestLeadCaptureForm extends LightningElement {
     }
 
     handleSubmit() {
-
         this.error = '';
 
         const allValid = [...this.template.querySelectorAll('lightning-input')]
@@ -68,7 +75,8 @@ export default class GuestLeadCaptureForm extends LightningElement {
             lastName: this.lastName,
             phone: this.phone,
             email: this.email,
-            message: this.message
+            message: this.message,
+            propertyId: this.propertyId
         })
         .then(() => {
             this.isSuccess = true;

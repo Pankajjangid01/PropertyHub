@@ -1,0 +1,36 @@
+<template>
+    <header class="site-header slds-grid slds-grid_align-spread slds-grid_vertical-align-center">
+        <!-- Brand Logo/Panel -->
+        <div class="brand-panel" onclick={handleNavClick} data-page={homePageName}>
+            <div class="logo-icon">🏢</div>
+            <h2 class="brand-title">PropertyHub</h2>
+        </div>
+
+        <!-- Navigation Links and Actions -->
+        <div class="header-actions slds-grid slds-grid_vertical-align-center">
+            <nav class="menu-links" aria-label="Site navigation">
+                <template for:each={navigationItems} for:item="item">
+                    <button
+                        key={item.id}
+                        class="menu-link"
+                        data-page={item.pageName}
+                        onclick={handleNavClick}
+                    >
+                        {item.label}
+                    </button>
+                </template>
+            </nav>
+
+            <!-- Login button for Guest users -->
+            <template if:true={isGuestUser}>
+                <lightning-button
+                    class="login-btn-custom"
+                    variant="neutral"
+                    label="Login"
+                    onclick={handleLoginClick}
+                ></lightning-button>
+            </template>
+        </div>
+
+    </header>
+</template>

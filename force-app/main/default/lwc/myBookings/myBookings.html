@@ -1,0 +1,58 @@
+<template>
+    <section class="bookings-page">
+        <div class="page-heading">
+            <p class="kicker">Your Journey</p>
+            <h1>My Bookings</h1>
+        </div>
+
+        <template if:true={hasBookings}>
+            <div class="bookings-grid">
+                <template for:each={bookings} for:item="booking">
+                    <div key={booking.bookingId} class="booking-card">
+
+                        <div class="thumb-wrap">
+                            <template if:true={booking.thumbnailUrl}>
+                                <img src={booking.thumbnailUrl} alt={booking.propertyName} class="thumb-img"/>
+                            </template>
+                            <template if:false={booking.thumbnailUrl}>
+                                <div class="thumb-placeholder">🏠</div>
+                            </template>
+                            <span class={booking.statusClass}>{booking.bookingStatus}</span>
+                        </div>
+
+                        <div class="card-body">
+                            <p class="booking-ref">{booking.bookingName}</p>
+                            <h3 class="property-name">{booking.propertyName}</h3>
+                            <p class="property-type">{booking.propertyType}</p>
+
+                            <div class="payment-section">
+                                <div class="progress-track">
+                                    <div class="progress-fill" style={booking.progressStyle}></div>
+                                </div>
+                                <div class="payment-row">
+                                    <span>Paid: {booking.formattedPaid}</span>
+                                    <span>Total: {booking.formattedTotal}</span>
+                                </div>
+                                <div class="balance-row">
+                                    Balance Due: <strong>{booking.formattedBalance}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasBookings}>
+            <div class="empty-state">
+                <p>You don't have any bookings yet.</p>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load your bookings: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

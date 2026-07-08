@@ -7,7 +7,8 @@ public without sharing class GuestLeadCaptureController {
         String lastName,
         String phone,
         String email,
-        String message
+        String message,
+        Id propertyId
     ) {
 
         if (String.isBlank(lastName) || String.isBlank(phone)) {
@@ -19,13 +20,15 @@ public without sharing class GuestLeadCaptureController {
         newLead.Salutation = salutation;
         newLead.FirstName = firstName;
         newLead.LastName = lastName;
-
         newLead.Phone = phone;
         newLead.Email = email;
         newLead.Company = 'Individual';
         newLead.LeadSource = 'Web';
         newLead.Description = message;
 
+        if (propertyId != null) {
+            newLead.Property_Interest__c = propertyId;
+        }
 
         insert newLead;
     }

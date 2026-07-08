@@ -1,0 +1,51 @@
+<template>
+    <section class="detail-page">
+        <template if:true={payment}>
+            <p class="kicker">{payment.paymentName}</p>
+            <h1>{payment.propertyName}</h1>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="lbl">Status</span>
+                    <span class="val">{payment.paymentStatus}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Amount</span>
+                    <span class="val">{payment.formattedAmount}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Payment Date</span>
+                    <span class="val">{payment.paymentDate}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Payment Mode</span>
+                    <span class="val">{payment.paymentMode}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Booking</span>
+                    <span class="val">{payment.bookingName}</span>
+                </div>
+            </div>
+
+            <div class="files-section">
+                <h2>Receipt</h2>
+                <template if:true={hasFiles}>
+                    <template for:each={files} for:item="f">
+                        <a key={f.downloadUrl} href={f.downloadUrl} target="_blank" class="file-link">
+                            📄 {f.title}
+                        </a>
+                    </template>
+                </template>
+                <template if:false={hasFiles}>
+                    <p class="no-files">Receipt not generated yet.</p>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load payment: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

@@ -1,0 +1,107 @@
+:host {
+    display: block;
+}
+
+.site-footer {
+    background:
+        radial-gradient(circle at top left, rgba(216, 155, 85, 0.2), transparent 28%),
+        linear-gradient(135deg, #311221 0%, #4f1f43 100%);
+    border-radius: 1.5rem;
+    color: #ffffff;
+    margin-top: 2rem;
+    overflow: hidden;
+    padding: 2rem 1.5rem 1.25rem;
+    position: relative;
+}
+
+.footer-content {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: space-between;
+    margin: 0 auto;
+    max-width: 1200px;
+}
+
+.footer-kicker {
+    color: rgba(255, 255, 255, 0.72);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    margin: 0 0 0.45rem;
+    text-transform: uppercase;
+}
+
+.footer-brand h3 {
+    font-size: 1.4rem;
+    margin: 0 0 0.35rem;
+}
+
+.footer-brand p {
+    margin: 0;
+}
+
+.footer-brand p:last-child {
+    color: rgba(255, 255, 255, 0.78);
+    line-height: 1.6;
+    max-width: 44ch;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+    color: rgba(255, 255, 255, 0.65);
+    font-size: 0.82rem;
+    margin: 1.5rem auto 0;
+    max-width: 1200px;
+    padding-top: 1rem;
+    text-align: center;
+}
+
+.coming-soon-toast {
+    background-color: #d89b55;
+    border-radius: 0.85rem;
+    bottom: 1.5rem;
+    box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+    color: #241b17;
+    font-size: 0.92rem;
+    font-weight: 700;
+    padding: 0.8rem 1rem;
+    position: fixed;
+    right: 1.5rem;
+    z-index: 10;
+}
+
+@media (max-width: 768px) {
+    .site-footer {
+        padding: 1.5rem 1rem 1rem;
+    }
+
+    .footer-content {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .footer-bottom {
+        text-align: left;
+    }
+}
+
+.contact-btn-custom :deep(.slds-button_neutral) {
+    border-color: #d89b55;
+    background-color: transparent;
+    color: #ffffff;
+    font-weight: 700;
+    border-radius: 20px;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+    transition: all 0.25s ease;
+}
+
+.contact-btn-custom :deep(.slds-button_neutral:hover) {
+    background-color: #d89b55;
+    color: #241b17;
+    border-color: #d89b55;
+    box-shadow: 0 4px 12px rgba(216, 155, 83, 0.35);
+}
+

@@ -1,0 +1,33 @@
+<template>
+    <section class="list-page">
+        <div class="page-heading">
+            <p class="kicker">Legal Documentation</p>
+            <h1>My Agreements</h1>
+        </div>
+
+        <template if:true={hasAgreements}>
+            <div class="list-grid">
+                <template for:each={agreements} for:item="a">
+                    <div key={a.agreementId} class="list-card" data-id={a.agreementId} onclick={handleRowClick}>
+                        <p class="ref">{a.agreementName}</p>
+                        <h3>{a.propertyName}</h3>
+                        <p class="sub">Booking: {a.bookingName}</p>
+                        <span class="status-badge">{a.agreementStatus}</span>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasAgreements}>
+            <div class="empty-state">
+                <p>No agreements found yet.</p>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load agreements: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

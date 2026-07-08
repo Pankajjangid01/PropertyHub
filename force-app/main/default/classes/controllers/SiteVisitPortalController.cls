@@ -1,13 +1,48 @@
-public with sharing class SiteVisitPortalController {
+public without sharing class SiteVisitPortalController {
+
+    public class SiteVisitWrapper {
+        @AuraEnabled public Id visitId;
+        @AuraEnabled public String propertyName;
+        @AuraEnabled public String visitDate;
+        @AuraEnabled public String visitStatus;
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<SiteVisitWrapper> getMySiteVisits() {
+
+        Id currentContactId = [
+            SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()
+        ].ContactId;
+
+        List<SiteVisitWrapper> result = new List<SiteVisitWrapper>();
+        if (currentContactId == null) {
+            return result;
+        }
+
+        List<Site_Visit__c> visits = [
+            SELECT Id, Visit_Date__c, Visit_Status__c, Property__r.Name
+            FROM Site_Visit__c
+            WHERE Portal_Contact__c = :currentContactId
+            ORDER BY Visit_Date__c DESC
+        ];
+
+        for (Site_Visit__c v : visits) {
+            SiteVisitWrapper sw = new SiteVisitWrapper();
+            sw.visitId = v.Id;
+            sw.propertyName = v.Property__r != null ? v.Property__r.Name : null;
+            sw.visitDate = v.Visit_Date__c != null ? v.Visit_Date__c.format() : null;
+            sw.visitStatus = v.Visit_Status__c;
+            result.add(sw);
+        }
+
+        return result;
+    }
 
     @AuraEnabled
     public static void submitSiteVisitRequest(Id propertyId, String visitDateTime) {
 
         List<User> currentUserList = [
-            SELECT ContactId
-            FROM User
-            WHERE Id = :UserInfo.getUserId()
-            LIMIT 1
+            SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId() LIMIT 1
         ];
 
         if (currentUserList.isEmpty() || currentUserList[0].ContactId == null) {
@@ -15,7 +50,6 @@ public with sharing class SiteVisitPortalController {
         }
 
         Id currentContactId = currentUserList[0].ContactId;
-
         DateTime parsedVisitDateTime;
         try {
             String normalized = visitDateTime.replace('T', ' ');
@@ -27,8 +61,8 @@ public with sharing class SiteVisitPortalController {
             throw new AuraHandledException('Invalid date/time format: ' + visitDateTime);
         }
 
-        // Find the Opportunity linked to this Contact via Primary Contact Role
         Id relatedOpportunityId;
+        Id assignedAgentId;
         List<OpportunityContactRole> ocrList = [
             SELECT OpportunityId, Opportunity.OwnerId
             FROM OpportunityContactRole
@@ -37,13 +71,11 @@ public with sharing class SiteVisitPortalController {
             LIMIT 1
         ];
 
-        Id assignedAgentId;
         if (!ocrList.isEmpty()) {
             relatedOpportunityId = ocrList[0].OpportunityId;
-            assignedAgentId = ocrList[0].Opportunity.OwnerId; // fallback: Opportunity Owner
+            assignedAgentId = ocrList[0].Opportunity.OwnerId;
         }
 
-        // Prefer Booking Owner if a Booking already exists for this contact (more specific/current agent)
         List<Booking__c> existingBookings = [
             SELECT OwnerId
             FROM Booking__c
@@ -61,12 +93,12 @@ public with sharing class SiteVisitPortalController {
         visit.Portal_Contact__c = currentContactId;
         visit.Opportunity__c = relatedOpportunityId;
         visit.Visit_Date__c = parsedVisitDateTime;
-        visit.Visit_Status__c = 'Scheduled';
+        visit.Visit_Status__c = 'Requested';
 
         if (assignedAgentId != null) {
             visit.OwnerId = assignedAgentId;
         }
-        
+
         insert visit;
     }
 }

@@ -1,0 +1,47 @@
+<template>
+    <section class="detail-page">
+        <template if:true={agreement}>
+            <p class="kicker">{agreement.agreementName}</p>
+            <h1>{agreement.propertyName}</h1>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="lbl">Status</span>
+                    <span class="val">{agreement.agreementStatus}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Booking</span>
+                    <span class="val">{agreement.bookingName}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Agreement Date</span>
+                    <span class="val">{agreement.agreementDate}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Registration Date</span>
+                    <span class="val">{agreement.registrationDate}</span>
+                </div>
+            </div>
+
+            <div class="files-section">
+                <h2>Documents</h2>
+                <template if:true={hasFiles}>
+                    <template for:each={files} for:item="f">
+                        <a key={f.downloadUrl} href={f.downloadUrl} target="_blank" class="file-link">
+                            📄 {f.title}
+                        </a>
+                    </template>
+                </template>
+                <template if:false={hasFiles}>
+                    <p class="no-files">No documents uploaded yet.</p>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load agreement: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

@@ -1,0 +1,45 @@
+<template>
+    <section class="list-page">
+        <div class="page-heading">
+            <p class="kicker">Property Visits</p>
+            <h1>My Site Visits</h1>
+        </div>
+
+        <div class="filter-bar">
+            <template for:each={filterOptions} for:item="f">
+                <button
+                    key={f.value}
+                    class={f.class}
+                    data-value={f.value}
+                    onclick={handleFilterClick}
+                >
+                    {f.label}
+                </button>
+            </template>
+        </div>
+
+        <template if:true={hasVisits}>
+            <div class="list-grid">
+                <template for:each={visits} for:item="v">
+                    <div key={v.visitId} class="list-card">
+                        <h3>{v.propertyName}</h3>
+                        <p class="sub">{v.visitDate}</p>
+                        <span class={v.statusClass}>{v.visitStatus}</span>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasVisits}>
+            <div class="empty-state">
+                <p>No site visits found for this filter.</p>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load site visits: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

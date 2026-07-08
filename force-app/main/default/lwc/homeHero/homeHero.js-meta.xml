@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<LightningComponentBundle xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>67.0</apiVersion>
+    <isExposed>true</isExposed>
+    <targets>
+        <target>lightning__HomePage</target>
+        <target>lightningCommunity__Default</target>
+        <target>lightningCommunity__Page</target>
+    </targets>
+    <targetConfigs>
+        <targetConfig targets="lightningCommunity__Default">
+            <property name="homePageName" type="String" label="Home Page API Name" default="Home"/>
+            <property name="propertiesPageName" type="String" label="Properties Page API Name" default="Properties__c"/>
+            <property name="loginPageName" type="String" label="Login Page API Name" default="Login"/>
+            <property name="myBookingsPageName" type="String" label="My Bookings Page API Name"/>
+            <property name="myPaymentsPageName" type="String" label="My Payments Page API Name"/>
+            <property name="myDocumentsPageName" type="String" label="My Documents Page API Name"/>
+            <property name="siteVisitPageName" type="String" label="Site Visit Page API Name"/>
+        </targetConfig>
+    </targetConfigs>
+</LightningComponentBundle>

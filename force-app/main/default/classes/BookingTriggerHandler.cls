@@ -29,10 +29,24 @@ public with sharing class BookingTriggerHandler {
 
         if (!approvedBookings.isEmpty()) {
             PortalUserProvisioningService.createPortalUsersForApprovedBookings(approvedBookings);
+            FinanceHandoffService.createFinanceTask(approvedBookings);
+
+            // NEW — advance Opportunity stage
+            Map<Id, String> oppStageMap = new Map<Id, String>();
+            for (Booking__c b : approvedBookings) {
+                if (b.Opportunity__c != null) {
+                    oppStageMap.put(b.Opportunity__c, 'Booking Confirmed');
+                }
+            }
+            OpportunityStageService.advanceStages(oppStageMap);
         }
     }
 
     public static void setPortalContact(List<Booking__c> bookings) {
+        if (TriggerControl.skipBookingPortalContactSync) {
+            return;
+        }
+
         Set<Id> oppIds = new Set<Id>();
         for (Booking__c b : bookings) {
             if (b.Opportunity__c != null) {
@@ -41,12 +55,16 @@ public with sharing class BookingTriggerHandler {
         }
 
         if (oppIds.isEmpty()) return;
+
         Map<Id, Id> oppToContactMap = new Map<Id, Id>();
-        for (OpportunityContactRole ocr : [
+
+        List<OpportunityContactRole> ocrList = [
             SELECT OpportunityId, ContactId
             FROM OpportunityContactRole
             WHERE OpportunityId IN :oppIds AND IsPrimary = true
-        ]) {
+        ];
+
+        for (OpportunityContactRole ocr : ocrList) {
             oppToContactMap.put(ocr.OpportunityId, ocr.ContactId);
         }
 

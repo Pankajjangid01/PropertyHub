@@ -1,0 +1,14 @@
+<template>
+    <template if:true={showButton}>
+        <lightning-card title="Create Booking">
+            <div class="slds-p-around_medium">
+                <lightning-button
+                    variant="brand"
+                    label="Create Booking"
+                    onclick={handleCreateBooking}
+                ></lightning-button>
+            </div>
+        </lightning-card>
+    </template>
+
+</template>

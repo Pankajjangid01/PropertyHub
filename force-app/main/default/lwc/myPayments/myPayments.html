@@ -1,0 +1,33 @@
+<template>
+    <section class="list-page">
+        <div class="page-heading">
+            <p class="kicker">Transaction History</p>
+            <h1>My Payments</h1>
+        </div>
+
+        <template if:true={hasPayments}>
+            <div class="list-grid">
+                <template for:each={payments} for:item="p">
+                    <div key={p.paymentId} class="list-card" data-id={p.paymentId} onclick={handleRowClick}>
+                        <p class="ref">{p.paymentName}</p>
+                        <h3>{p.propertyName}</h3>
+                        <p class="sub">{p.formattedAmount} &middot; {p.paymentMode} &middot; {p.paymentDate}</p>
+                        <span class={p.statusClass}>{p.paymentStatus}</span>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasPayments}>
+            <div class="empty-state">
+                <p>No payments found yet.</p>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load payments: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

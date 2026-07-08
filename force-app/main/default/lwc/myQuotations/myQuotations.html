@@ -1,0 +1,33 @@
+<template>
+    <section class="list-page">
+        <div class="page-heading">
+            <p class="kicker">Pricing & Offers</p>
+            <h1>My Quotations</h1>
+        </div>
+
+        <template if:true={hasQuotations}>
+            <div class="list-grid">
+                <template for:each={quotations} for:item="q">
+                    <div key={q.quotationId} class="list-card" data-id={q.quotationId} onclick={handleRowClick}>
+                        <p class="ref">{q.quotationName}</p>
+                        <h3>{q.propertyName}</h3>
+                        <p class="sub">{q.formattedTotal}</p>
+                        <span class="status-badge">{q.quotationStatus}</span>
+                    </div>
+                </template>
+            </div>
+        </template>
+
+        <template if:false={hasQuotations}>
+            <div class="empty-state">
+                <p>No quotations found yet.</p>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load quotations: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>

@@ -1,0 +1,16 @@
+<template>
+    <lightning-card title={cardTitle}>
+        <div class="slds-p-around_medium">
+            <lightning-button
+                variant="brand"
+                label={buttonLabel}
+                onclick={handleSendEmail}
+                disabled={isSending}
+            ></lightning-button>
+
+            <template if:true={isSending}>
+                <lightning-spinner alternative-text="Sending..." size="small"></lightning-spinner>
+            </template>
+        </div>
+    </lightning-card>
+</template>

@@ -10,11 +10,11 @@
         </template>
 
         <template if:true={isSuccess}>
-            <p>✅ Your site visit request has been submitted successfully.</p>
+            <p class="success">✅ Your site visit request has been submitted successfully.</p>
         </template>
 
         <template if:true={error}>
-            <p>Error: {error}</p>
+            <p class="error">Error: {error}</p>
         </template>
     </div>
 </template>

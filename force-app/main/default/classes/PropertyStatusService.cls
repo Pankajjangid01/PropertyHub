@@ -4,7 +4,7 @@ public without sharing class PropertyStatusService {
         Map<Id, String> propertyIdToNewStatus = new Map<Id, String>();
         for (Booking__c booking : bookings) {
             if (booking.Property__c != null) {
-                propertyIdToNewStatus.put(booking.Property__c, 'Reserved');
+                propertyIdToNewStatus.put(booking.Property__c, 'On Hold');
             }
         }
         updateProperties(propertyIdToNewStatus);
@@ -170,10 +170,12 @@ public without sharing class PropertyStatusService {
     }
 
     private static String mapBookingStatusToPropertyStatus(String bookingStatus) {
-        if (bookingStatus == 'Rejected' || bookingStatus == 'Cancelled') {
+        if (bookingStatus == 'Approved') {
+            return 'Reserved';
+        } else if (bookingStatus == 'Rejected' || bookingStatus == 'Cancelled') {
             return 'Available';
         }
-        return null;
+        return null; // 'Sold' will still be set later by Payment logic (full payment received)
     }
 
     private static void updateProperties(Map<Id, String> propertyIdToNewStatus) {

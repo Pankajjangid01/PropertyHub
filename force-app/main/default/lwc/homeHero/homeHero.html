@@ -1,0 +1,76 @@
+<template>
+    <section class="home-page">
+        <section class="hero-section">
+            <div class="hero-card">
+                <h1 class="hero-title">Find Your Dream Property</h1>
+                <p class="hero-subtitle">
+                    Browse residential and commercial properties across our finest projects
+                </p>
+
+                <div class="hero-actions">
+                    <lightning-button
+                        class="browse-btn-custom"
+                        variant="neutral"
+                        label="Browse Properties"
+                        onclick={handleBrowseClick}
+                    ></lightning-button>
+                </div>
+            </div>
+        </section>
+
+        <section class="projects-section">
+            <div class="section-heading">
+                <h2 class="section-title">Featured Projects</h2>
+            </div>
+
+            <template if:true={hasProjects}>
+                <div class="projects-grid slds-grid slds-wrap slds-gutters">
+                    <template for:each={featuredProjects} for:item="proj">
+                        <div key={proj.projectId} class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
+                            <article class="project-card slds-card" data-id={proj.projectId} onclick={handleProjectClick}>
+                                <div class="slds-card__body slds-card__body_inner project-card-body">
+                                    <div class="project-card-header">
+                                        <div>
+                                            <h3 class="project-name">{proj.projectName}</h3>
+                                        </div>
+                                        <lightning-badge label={proj.statusLabel}></lightning-badge>
+                                    </div>
+
+                                    <div class="project-meta-wrap">
+                                        <p class="project-meta">📍 {proj.locationLabel}</p>
+                                        <p class="project-meta">🏗 {proj.builderLabel}</p>
+                                        <p class="project-meta">{proj.propertyCountLabel}</p>
+                                    </div>
+
+                                    <div class="project-summary">
+                                        <p class="price-range">{proj.priceLabel}</p>
+                                    </div>
+
+                                    <div class="project-card-footer">
+                                        <span class="view-link">View Properties →</span>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                    </template>
+                </div>
+            </template>
+
+            <template if:true={error}>
+                <div class="state-card slds-card">
+                    <div class="slds-card__body slds-card__body_inner">
+                        <p class="error-text">Unable to load projects: {error}</p>
+                    </div>
+                </div>
+            </template>
+
+            <template if:true={showProjectEmptyState}>
+                <div class="state-card slds-card">
+                    <div class="slds-card__body slds-card__body_inner">
+                        <p class="empty-text">No projects are available right now.</p>
+                    </div>
+                </div>
+            </template>
+        </section>
+    </section>
+</template>

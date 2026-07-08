@@ -1,0 +1,55 @@
+<template>
+    <section class="listing-page">
+        <div class="listing-header">
+            <h1 class="listing-title">Available Properties</h1>
+
+            <template if:true={activeProjectName}>
+                <div class="filter-chip">
+                    <span>Showing properties in: <strong>{activeProjectName}</strong></span>
+                    <button class="clear-filter-btn" onclick={handleClearFilter}>✕ Clear filter</button>
+                </div>
+            </template>
+        </div>
+
+        <template if:true={isLoading}>
+            <div class="state-message">Loading properties...</div>
+        </template>
+
+        <template if:true={hasProperties}>
+            <div class="property-grid">
+                <template for:each={properties} for:item="prop">
+                    <article
+                        key={prop.propertyId}
+                        class="property-card"
+                        data-id={prop.propertyId}
+                        onclick={handlePropertyClick}
+                    >
+                        <div class="property-image-wrap">
+                            <template if:true={prop.thumbnailUrl}>
+                                <img src={prop.thumbnailUrl} alt={prop.propertyName} class="property-image"/>
+                            </template>
+                            <template if:false={prop.thumbnailUrl}>
+                                <div class="no-image">No Image</div>
+                            </template>
+                            <span class="status-pill">{prop.status}</span>
+                        </div>
+
+                        <div class="property-info">
+                            <h3 class="property-name">{prop.propertyName}</h3>
+                            <p class="property-meta">{prop.propertyType} • {prop.areaSqft} sqft</p>
+                            <p class="property-price">{prop.priceLabel}</p>
+                        </div>
+                    </article>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={showEmptyState}>
+            <div class="state-message">No properties found matching this filter.</div>
+        </template>
+
+        <template if:true={error}>
+            <div class="state-message error">Unable to load properties: {error}</div>
+        </template>
+    </section>
+</template>

@@ -1,4 +1,4 @@
-public with sharing class PropertyPortalController {
+public without sharing class PropertyPortalController {
 
     public class PropertyWrapper {
         @AuraEnabled public Id propertyId;
@@ -11,14 +11,18 @@ public with sharing class PropertyPortalController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<PropertyWrapper> getAvailableProperties() {
+    public static List<PropertyWrapper> getAvailableProperties(Id projectId) {
 
-        List<Property__c> properties = [
-            SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Status__c
-            FROM Property__c
-            WHERE Status__c = 'Available'
-            ORDER BY CreatedDate DESC
-        ];
+        String query = 'SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Status__c ' +
+                        'FROM Property__c WHERE Status__c = \'Available\'';
+
+        if (projectId != null) {
+            query += ' AND Property_Project__c = :projectId';
+        }
+
+        query += ' ORDER BY CreatedDate DESC';
+
+        List<Property__c> properties = Database.query(query);
 
         List<PropertyWrapper> result = new List<PropertyWrapper>();
 
@@ -33,19 +37,16 @@ public with sharing class PropertyPortalController {
 
         Map<Id, String> propertyIdToThumbnailUrl = new Map<Id, String>();
 
-        if (!propertyIds.isEmpty()) {
-            List<ContentDocumentLink> links = [
-                SELECT LinkedEntityId, ContentDocument.LatestPublishedVersionId, ContentDocument.CreatedDate
-                FROM ContentDocumentLink
-                WHERE LinkedEntityId IN :propertyIds
-            ];
-            
-            for (ContentDocumentLink cdl : links) {
-                Boolean alreadyHasThumbnail = propertyIdToThumbnailUrl.containsKey(cdl.LinkedEntityId);
-                if (alreadyHasThumbnail == false) {
-                    String fileUrl = '/sfc/servlet.shepherd/version/download/' + cdl.ContentDocument.LatestPublishedVersionId;
-                    propertyIdToThumbnailUrl.put(cdl.LinkedEntityId, fileUrl);
-                }
+        List<ContentDocumentLink> links = [
+            SELECT LinkedEntityId, ContentDocument.LatestPublishedVersionId, ContentDocument.CreatedDate
+            FROM ContentDocumentLink
+            WHERE LinkedEntityId IN :propertyIds
+        ];
+
+        for (ContentDocumentLink cdl : links) {
+            if (!propertyIdToThumbnailUrl.containsKey(cdl.LinkedEntityId)) {
+                String fileUrl = '/sfc/servlet.shepherd/version/download/' + cdl.ContentDocument.LatestPublishedVersionId;
+                propertyIdToThumbnailUrl.put(cdl.LinkedEntityId, fileUrl);
             }
         }
 

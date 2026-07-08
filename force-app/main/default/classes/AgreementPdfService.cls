@@ -29,6 +29,9 @@ public with sharing class AgreementPdfService {
         cdl.Visibility = 'AllUsers';
         insert cdl;
 
+        // NEW
+        update new Agreement__c(Id = agreementId, PDF_Generated__c = true);
+
         return insertedCv.ContentDocumentId;
     }
 }

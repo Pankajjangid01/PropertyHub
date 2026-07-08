@@ -1,0 +1,26 @@
+<template>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <p class="footer-kicker">Need assistance?</p>
+                <h3>{brandName}</h3>
+                <p>{tagline}</p>
+            </div>
+
+            <template if:true={shouldShowContact}>
+                <div class="footer-actions">
+                    <lightning-button
+                        class="contact-btn-custom"
+                        variant="neutral"
+                        label="Contact Us"
+                        onclick={handleContactClick}
+                    ></lightning-button>
+                </div>
+            </template>
+        </div>
+
+        <div class="footer-bottom">
+            <p>© 2026 CodeTrade.io — PropertyHub. All rights reserved.</p>
+        </div>
+    </footer>
+</template>

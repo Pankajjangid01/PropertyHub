@@ -1,0 +1,39 @@
+<template>
+    <section class="detail-page">
+        <template if:true={quotation}>
+            <p class="kicker">{quotation.quotationName}</p>
+            <h1>{quotation.propertyName}</h1>
+
+            <div class="info-grid">
+                <div class="info-item">
+                    <span class="lbl">Status</span>
+                    <span class="val">{quotation.quotationStatus}</span>
+                </div>
+                <div class="info-item">
+                    <span class="lbl">Total Amount</span>
+                    <span class="val">{quotation.formattedTotal}</span>
+                </div>
+            </div>
+
+            <div class="files-section">
+                <h2>Documents</h2>
+                <template if:true={hasFiles}>
+                    <template for:each={files} for:item="f">
+                        <a key={f.downloadUrl} href={f.downloadUrl} target="_blank" class="file-link">
+                            📄 {f.title}
+                        </a>
+                    </template>
+                </template>
+                <template if:false={hasFiles}>
+                    <p class="no-files">No documents uploaded yet.</p>
+                </template>
+            </div>
+        </template>
+
+        <template if:true={error}>
+            <div class="error-state">
+                <p>Unable to load quotation: {error}</p>
+            </div>
+        </template>
+    </section>
+</template>
