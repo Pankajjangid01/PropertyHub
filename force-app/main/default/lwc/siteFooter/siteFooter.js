@@ -21,4 +21,17 @@ export default class SiteFooter extends NavigationMixin(LightningElement) {
             }
         });
     }
+
+    handleNavClick(event) {
+        event.preventDefault();
+        const pageName = event.currentTarget.dataset.page;
+        if (pageName) {
+            this[NavigationMixin.Navigate]({
+                type: 'comm__namedPage',
+                attributes: {
+                    name: pageName
+                }
+            });
+        }
+    }
 }

@@ -21,6 +21,10 @@ export default class PropertyDetailView extends NavigationMixin(LightningElement
 
     @wire(getPropertyDetail, { propertyId: '$recordId' })
     wiredProperty({ data, error }) {
+        console.log('--- [DEBUG propertyDetailView] propertyId:', this.recordId);
+        console.log('--- [DEBUG propertyDetailView] Data payload:', data ? JSON.parse(JSON.stringify(data)) : 'null');
+        console.log('--- [DEBUG propertyDetailView] Error payload:', error ? JSON.parse(JSON.stringify(error)) : 'null');
+        
         if (data) {
             this.property = data;
             this.error = undefined;

@@ -11,4 +11,14 @@
         </lightning-card>
     </template>
 
+    <template if:true={showBookingCreatedMessage}>
+        <lightning-card title="Booking Status">
+            <div class="slds-p-around_medium">
+                <div class="slds-notify slds-notify_alert slds-alert_success" role="alert">
+                    <span class="slds-assistive-text">success</span>
+                    <h2>A Booking has already been created for this Quotation. Booking No: <a href={bookingUrl} target="_blank">{bookingName}</a></h2>
+                </div>
+            </div>
+        </lightning-card>
+    </template>
 </template>

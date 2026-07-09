@@ -24,12 +24,11 @@
             </div>
 
             <template if:true={hasProjects}>
-                <div class="projects-grid slds-grid slds-wrap slds-gutters">
+                <div class="projects-grid">
                     <template for:each={featuredProjects} for:item="proj">
-                        <div key={proj.projectId} class="slds-col slds-size_1-of-1 slds-large-size_1-of-2">
-                            <article class="project-card slds-card" data-id={proj.projectId} onclick={handleProjectClick}>
-                                <div class="slds-card__body slds-card__body_inner project-card-body">
-                                    <div class="project-card-header">
+                        <article key={proj.projectId} class="project-card" data-id={proj.projectId} onclick={handleProjectClick}>
+                            <div class="project-card-body">
+                                <div class="project-card-header">
                                         <div>
                                             <h3 class="project-name">{proj.projectName}</h3>
                                         </div>
@@ -49,9 +48,8 @@
                                     <div class="project-card-footer">
                                         <span class="view-link">View Properties →</span>
                                     </div>
-                                </div>
-                            </article>
-                        </div>
+                            </div>
+                        </article>
                     </template>
                 </div>
             </template>

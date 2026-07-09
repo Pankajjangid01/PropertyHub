@@ -7,6 +7,34 @@
                 <p>{tagline}</p>
             </div>
 
+            <div class="footer-links-container">
+                <div class="footer-links">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="javascript:void(0);" data-page="Home" onclick={handleNavClick}>Home</a></li>
+                        <template if:false={isGuestUser}>
+                            <li><a href="javascript:void(0);" data-page="My_Bookings__c" onclick={handleNavClick}>My Bookings</a></li>
+                            <li><a href="javascript:void(0);" data-page="My_Agreements__c" onclick={handleNavClick}>Agreements</a></li>
+                        </template>
+                        <template if:true={isGuestUser}>
+                            <li><a href="javascript:void(0);" data-page="Properties__c" onclick={handleNavClick}>Available Properties</a></li>
+                            <li><a href="javascript:void(0);" data-page="Contact_Us__c" onclick={handleNavClick}>Contact Us</a></li>
+                        </template>
+                    </ul>
+                </div>
+                
+                <template if:false={isGuestUser}>
+                    <div class="footer-links">
+                        <h4>Account & Support</h4>
+                        <ul>
+                            <li><a href="javascript:void(0);" data-page="My_Quotations__c" onclick={handleNavClick}>Quotations</a></li>
+                            <li><a href="javascript:void(0);" data-page="My_Payments__c" onclick={handleNavClick}>Payments</a></li>
+                            <li><a href="javascript:void(0);" data-page="Site_Visit__c" onclick={handleNavClick}>Site Visits</a></li>
+                        </ul>
+                    </div>
+                </template>
+            </div>
+
             <template if:true={shouldShowContact}>
                 <div class="footer-actions">
                     <lightning-button

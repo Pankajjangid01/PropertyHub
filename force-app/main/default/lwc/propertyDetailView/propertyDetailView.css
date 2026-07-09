@@ -1,26 +1,32 @@
 :host {
     display: block;
-    --ph-brand: #7a3468;
-    --ph-brand-deep: #5f2852;
-    --ph-brand-light: #f6ecf3;
-    --ph-surface: #f8fafc;
+    --ph-brand: #1f8a4c;
+    --ph-brand-deep: #0e4a27;
+    --ph-brand-light: #edf6f0;
+    --ph-brand-gradient: linear-gradient(135deg, #249d57 0%, #146c39 100%);
+    --ph-surface: #ffffff;
+    --ph-bg: #fafafa;
     --ph-border: #e2e8f0;
     --ph-text: #0f172a;
     --ph-muted: #64748b;
-    --ph-gold: #d89b55;
+    --ph-gold: #fbbf24;
+    --ph-radius: 20px;
+    --ph-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    --ph-shadow-hover: 0 20px 40px rgba(31, 138, 76, 0.15);
+    font-family: 'Inter', sans-serif;
 }
 
 .detail-page {
     max-width: 1400px;
-    margin: 2rem auto 4rem;
+    margin: 3rem auto 5rem;
     padding: 0 1.5rem;
-    font-family: inherit;
+    background-color: transparent;
 }
 
 .detail-grid {
     display: grid;
-    grid-template-columns: 1.2fr 0.8fr;
-    gap: 32px;
+    grid-template-columns: 1.3fr 0.7fr;
+    gap: 40px;
     align-items: start;
 }
 
@@ -28,17 +34,17 @@
 .gallery-column {
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 20px;
 }
 
 .main-image-wrap {
     position: relative;
     width: 100%;
     aspect-ratio: 16 / 9;
-    border-radius: 20px;
+    border-radius: var(--ph-radius);
     overflow: hidden;
     background-color: #f1f5f9;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    box-shadow: var(--ph-shadow);
 }
 
 .main-image {
@@ -54,47 +60,51 @@
     height: 100%;
     color: var(--ph-muted);
     font-size: 1.1rem;
-    background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+    font-weight: 500;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
 }
 
 .status-badge {
     position: absolute;
-    top: 16px;
-    left: 16px;
-    background-color: var(--ph-brand-deep);
+    top: 20px;
+    left: 20px;
+    background: var(--ph-brand-gradient);
     color: #ffffff;
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     font-weight: 700;
-    padding: 6px 14px;
+    padding: 8px 16px;
     border-radius: 30px;
     letter-spacing: 0.05em;
     text-transform: uppercase;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.3);
+    backdrop-filter: blur(4px);
 }
 
 .thumbnails-grid {
     display: flex;
-    gap: 12px;
+    gap: 16px;
     overflow-x: auto;
-    padding: 4px 0;
+    padding: 8px 0;
 }
 
 .thumbnail-item {
     border-radius: 12px;
-    width: 100px;
-    height: 65px;
+    width: 120px;
+    height: 80px;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid transparent;
-    transition: all 0.2s ease;
+    border: 3px solid transparent;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     flex-shrink: 0;
-    opacity: 0.7;
+    opacity: 0.6;
 }
 
 .thumbnail-item:hover,
 .thumbnail-item.active {
     border-color: var(--ph-brand);
     opacity: 1;
-    transform: translateY(-2px);
+    transform: translateY(-4px);
+    box-shadow: 0 8px 16px rgba(225, 29, 72, 0.2);
 }
 
 .thumbnail-item img {
@@ -111,44 +121,69 @@
 }
 
 .info-card {
-    background: #ffffff;
-    border: 1px solid var(--ph-border);
-    border-radius: 20px;
-    padding: 2.25rem;
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.02);
+    background: var(--ph-surface);
+    border: 1px solid rgba(226, 232, 240, 0.5);
+    border-radius: var(--ph-radius);
+    padding: 2.5rem;
+    box-shadow: var(--ph-shadow);
+    transition: transform 0.4s ease;
+}
+
+.info-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--ph-shadow-hover);
 }
 
 .project-tag {
-    font-size: 0.95rem;
+    font-size: 1rem;
     color: var(--ph-muted);
     font-weight: 600;
-    margin: 0 0 0.5rem;
+    margin: 0 0 0.75rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(225, 29, 72, 0.05);
+    padding: 6px 12px;
+    border-radius: 20px;
 }
 
 .property-title {
-    font-size: 2rem;
-    font-weight: 8500;
-    line-height: 1.2;
-    color: var(--ph-text);
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.25;
+    background: var(--ph-brand-gradient);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
     margin: 0 0 1rem;
     letter-spacing: -0.02em;
 }
 
 .property-price {
-    font-size: 1.8rem;
+    font-size: 2.2rem;
     font-weight: 800;
-    color: var(--ph-brand);
-    margin: 0 0 2rem;
+    color: var(--ph-text);
+    margin: 0 0 2.5rem;
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+}
+
+.property-price::before {
+    content: "Rs.";
+    font-size: 1.2rem;
+    color: var(--ph-muted);
+    font-weight: 600;
 }
 
 .features-grid {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
-    gap: 12px;
+    gap: 16px;
     border-top: 1px solid var(--ph-border);
     border-bottom: 1px solid var(--ph-border);
-    padding: 1.5rem 0;
-    margin-bottom: 2rem;
+    padding: 2rem 0;
+    margin-bottom: 2.5rem;
 }
 
 .feature-item {
@@ -156,25 +191,34 @@
     flex-direction: column;
     align-items: center;
     text-align: center;
+    background: rgba(248, 250, 252, 0.5);
+    padding: 1rem;
+    border-radius: 12px;
+    transition: background 0.3s ease;
+}
+
+.feature-item:hover {
+    background: rgba(225, 29, 72, 0.05);
 }
 
 .feature-icon {
-    font-size: 1.5rem;
-    margin-bottom: 0.4rem;
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
 }
 
 .feature-val {
-    font-size: 1rem;
-    font-weight: 700;
+    font-size: 1.1rem;
+    font-weight: 800;
     color: var(--ph-text);
 }
 
 .feature-lbl {
-    font-size: 0.78rem;
+    font-size: 0.8rem;
     color: var(--ph-muted);
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
-    margin-top: 0.2rem;
+    margin-top: 0.3rem;
+    letter-spacing: 0.05em;
 }
 
 .action-panel {
@@ -182,50 +226,45 @@
     flex-direction: column;
 }
 
-.site-visit-btn :deep(.slds-button_brand) {
-    background-color: var(--ph-brand);
-    border-color: var(--ph-brand);
+.site-visit-btn :deep(.slds-button_brand),
+.enquire-btn :deep(.slds-button_brand) {
+    background: var(--ph-brand-gradient);
+    border: none;
     border-radius: 30px;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    height: 48px;
+    height: 54px;
     width: 100%;
-    box-shadow: 0 4px 15px rgba(122, 52, 104, 0.2);
-    transition: all 0.25s ease;
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: white;
 }
 
-.site-visit-btn :deep(.slds-button_brand:hover) {
-    background-color: var(--ph-brand-deep);
-    border-color: var(--ph-brand-deep);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 18px rgba(95, 40, 82, 0.3);
-}
-
-.auth-hint {
-    background-color: var(--ph-surface);
-    border: 1px solid var(--ph-border);
-    border-radius: 12px;
-    padding: 1rem;
-    text-align: center;
-    color: var(--ph-muted);
-    font-weight: 600;
-    font-size: 0.95rem;
+.site-visit-btn :deep(.slds-button_brand:hover),
+.enquire-btn :deep(.slds-button_brand:hover) {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px rgba(190, 18, 60, 0.35);
+    background: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
 }
 
 .state-card {
-    background: #ffffff;
-    border: 1px solid var(--ph-border);
-    border-radius: 16px;
-    padding: 3rem 2rem;
+    background: rgba(255, 255, 255, 0.6);
+    backdrop-filter: blur(10px);
+    border: 1px dashed var(--ph-border);
+    border-radius: var(--ph-radius);
+    padding: 4rem 2rem;
     text-align: center;
     max-width: 600px;
     margin: 4rem auto;
+    font-weight: 500;
+    color: var(--ph-muted);
+    font-size: 1.1rem;
 }
 
 .state-card.error {
-    color: #e11d48;
+    color: #be123c;
     background-color: #fff1f2;
-    border-color: #fecdd3;
+    border: 1px solid #fda4af;
 }
 
 /* Modal Overlay Styles */
@@ -236,7 +275,7 @@
     width: 100vw;
     height: 100vh;
     background-color: rgba(15, 23, 42, 0.6);
-    backdrop-filter: blur(4px);
+    backdrop-filter: blur(8px);
     z-index: 9000;
 }
 
@@ -247,12 +286,12 @@
     transform: translate(-50%, -50%);
     width: 90%;
     max-width: 500px;
-    background-color: #ffffff;
-    border-radius: 20px;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    background-color: var(--ph-surface);
+    border-radius: var(--ph-radius);
+    box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
     z-index: 9001;
     overflow: hidden;
-    animation: zoomIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    animation: zoomIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
 
 @keyframes zoomIn {
@@ -270,43 +309,51 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 1.5rem 1.75rem;
+    padding: 1.75rem 2rem;
     border-bottom: 1px solid var(--ph-border);
+    background: rgba(248, 250, 252, 0.5);
 }
 
 .modal-header h2 {
-    font-size: 1.3rem;
-    font-weight: 755;
-    color: var(--ph-brand-deep);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--ph-text);
     margin: 0;
 }
 
 .modal-close-btn {
-    background: none;
+    background: rgba(226, 232, 240, 0.5);
     border: none;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 1.25rem;
     font-weight: 700;
     color: var(--ph-muted);
     cursor: pointer;
-    padding: 0;
-    transition: color 0.2s ease;
+    transition: all 0.3s ease;
 }
 
 .modal-close-btn:hover {
-    color: var(--ph-text);
+    background: var(--ph-brand);
+    color: white;
+    transform: rotate(90deg);
 }
 
 .modal-body {
-    padding: 1.75rem;
+    padding: 2rem;
 }
 
 /* Modal Inner Form overrides */
 .modal-body :deep(h3) {
-    display: none; /* Hide internal form duplicate title */
+    display: none; 
 }
 
 .modal-body :deep(label) {
-    font-size: 0.9rem;
+    font-size: 0.95rem;
     font-weight: 700;
     color: var(--ph-text);
     margin-bottom: 0.5rem;
@@ -315,66 +362,69 @@
 
 .modal-body :deep(input[type="datetime-local"]) {
     width: 100%;
-    height: 42px;
-    border-radius: 10px;
+    height: 48px;
+    border-radius: 12px;
     border: 1px solid var(--ph-border);
-    padding: 0.5rem 1rem;
-    font-size: 0.95rem;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
     font-family: inherit;
     outline: none;
     margin-bottom: 1.5rem;
-    transition: border-color 0.2s ease;
+    transition: all 0.3s ease;
+    background: var(--ph-bg);
 }
 
 .modal-body :deep(input[type="datetime-local"]:focus) {
     border-color: var(--ph-brand);
+    box-shadow: 0 0 0 4px rgba(225, 29, 72, 0.1);
+    background: white;
 }
 
 .modal-body :deep(button) {
-    background-color: var(--ph-brand);
-    border: 1px solid var(--ph-brand);
+    background: var(--ph-brand-gradient);
+    border: none;
     color: #ffffff;
-    font-size: 1rem;
+    font-size: 1.1rem;
     font-weight: 700;
-    height: 44px;
+    height: 52px;
     border-radius: 30px;
     width: 100%;
     cursor: pointer;
-    box-shadow: 0 4px 10px rgba(122, 52, 104, 0.2);
-    transition: all 0.25s ease;
+    box-shadow: 0 8px 20px rgba(225, 29, 72, 0.25);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-body :deep(button:hover) {
-    background-color: var(--ph-brand-deep);
-    border-color: var(--ph-brand-deep);
-    box-shadow: 0 6px 15px rgba(95, 40, 82, 0.3);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(190, 18, 60, 0.35);
+    background: linear-gradient(135deg, #be123c 0%, #9f1239 100%);
 }
 
 .modal-body :deep(.error) {
-    color: #e11d48;
+    color: #be123c;
     background-color: #fff1f2;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    font-size: 0.85rem;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 0.9rem;
     font-weight: 600;
-    margin-top: 1rem;
-    border: 1px solid #fecdd3;
+    margin-top: 1.5rem;
+    border: 1px solid #fda4af;
 }
 
 .modal-body :deep(.success) {
     color: #047857;
     background-color: #ecfdf5;
-    padding: 1rem;
-    border-radius: 10px;
+    padding: 1.25rem;
+    border-radius: 12px;
     text-align: center;
     font-weight: 600;
-    margin: 1rem 0;
-    border: 1px solid #a7f3d0;
+    margin: 1.5rem 0;
+    border: 1px solid #34d399;
 }
 
 @media (max-width: 900px) {
     .detail-grid {
         grid-template-columns: 1fr;
-        gap: 24px;
+        gap: 32px;
     }
 }

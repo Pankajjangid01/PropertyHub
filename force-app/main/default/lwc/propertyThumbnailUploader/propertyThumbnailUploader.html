@@ -1,0 +1,25 @@
+<template>
+    <lightning-card title="Upload Public Thumbnail" icon-name="standard:file">
+        <div class="slds-p-around_medium">
+            <template if:true={isUploading}>
+                <div class="slds-is-relative" style="height: 100px;">
+                    <lightning-spinner size="medium" variant="brand" alternative-text="Applying permissions..."></lightning-spinner>
+                </div>
+            </template>
+            <template if:false={isUploading}>
+                <p class="slds-m-bottom_medium slds-text-color_weak">
+                    Upload an image file (.jpg, .png) here. It will automatically be made visible to all portal community users.
+                </p>
+                <lightning-file-upload
+                    label="Select Thumbnail Image"
+                    name="thumbnailUpload"
+                    accept={acceptedFormats}
+                    record-id={recordId}
+                    onuploadfinished={handleUploadFinished}
+                    multiple="false"
+                >
+                </lightning-file-upload>
+            </template>
+        </div>
+    </lightning-card>
+</template>

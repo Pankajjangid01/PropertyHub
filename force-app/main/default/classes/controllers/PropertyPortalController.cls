@@ -41,6 +41,8 @@ public without sharing class PropertyPortalController {
             SELECT LinkedEntityId, ContentDocument.LatestPublishedVersionId, ContentDocument.CreatedDate
             FROM ContentDocumentLink
             WHERE LinkedEntityId IN :propertyIds
+            AND ContentDocument.FileType IN ('PNG', 'JPG', 'JPEG')
+            ORDER BY ContentDocument.CreatedDate DESC
         ];
 
         for (ContentDocumentLink cdl : links) {
@@ -100,6 +102,9 @@ public without sharing class PropertyPortalController {
             SELECT ContentDocument.LatestPublishedVersionId
             FROM ContentDocumentLink
             WHERE LinkedEntityId = :propertyId
+            AND ContentDocument.FileType IN ('PNG', 'JPG', 'JPEG')
+            ORDER BY ContentDocument.CreatedDate DESC
+            LIMIT 1
         ];
 
         for (ContentDocumentLink cdl : links) {
@@ -109,5 +114,37 @@ public without sharing class PropertyPortalController {
         detail.imageUrls = images;
 
         return detail;
+    }
+
+    @AuraEnabled
+    public static void updateFileVisibility(List<Id> documentIds, Id recordId) {
+        if (documentIds == null || documentIds.isEmpty() || recordId == null) {
+            return;
+        }
+
+        List<ContentDocumentLink> existingLinks = [
+            SELECT Id, ContentDocumentId, LinkedEntityId, ShareType 
+            FROM ContentDocumentLink 
+            WHERE ContentDocumentId IN :documentIds 
+            AND LinkedEntityId = :recordId
+        ];
+
+        if (existingLinks.isEmpty()) {
+            return;
+        }
+
+        List<ContentDocumentLink> newLinks = new List<ContentDocumentLink>();
+        
+        for (ContentDocumentLink oldCdl : existingLinks) {
+            ContentDocumentLink newCdl = new ContentDocumentLink();
+            newCdl.ContentDocumentId = oldCdl.ContentDocumentId;
+            newCdl.LinkedEntityId = oldCdl.LinkedEntityId;
+            newCdl.ShareType = oldCdl.ShareType != null ? oldCdl.ShareType : 'V';
+            newCdl.Visibility = 'AllUsers';
+            newLinks.add(newCdl);
+        }
+
+        delete existingLinks;
+        insert newLinks;
     }
 }

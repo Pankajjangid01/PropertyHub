@@ -1,85 +1,94 @@
 <template>
-    <lightning-card title="Interested? Enquire Now">
+    <article class="lead-form-wrapper">
+        <div class="lead-form-card">
+            <h2 class="form-title">Interested? Enquire Now</h2>
+            
+            <div class="slds-p-around_medium">
+                <template if:false={isSuccess}>
+                    <div class="slds-grid slds-wrap slds-gutters form-grid">
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-combobox
+                                label="Salutation"
+                                value={salutation}
+                                options={salutationOptions}
+                                onchange={handleSalutationChange}>
+                            </lightning-combobox>
+                        </div>
 
-        <div class="slds-p-around_medium">
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="First Name"
+                                value={firstName}
+                                onchange={handleFirstNameChange}>
+                            </lightning-input>
+                        </div>
 
-            <template if:false={isSuccess}>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="text"
+                                label="Last Name"
+                                value={lastName}
+                                required
+                                onchange={handleLastNameChange}>
+                            </lightning-input>
+                        </div>
 
-                <lightning-combobox
-                    label="Salutation"
-                    value={salutation}
-                    options={salutationOptions}
-                    onchange={handleSalutationChange}>
-                </lightning-combobox>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="tel"
+                                label="Phone"
+                                value={phone}
+                                required
+                                onchange={handlePhoneChange}>
+                            </lightning-input>
+                        </div>
 
-                <lightning-input
-                    type="text"
-                    label="First Name"
-                    value={firstName}
-                    onchange={handleFirstNameChange}>
-                </lightning-input>
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-input
+                                type="email"
+                                label="Email"
+                                value={email}
+                                onchange={handleEmailChange}>
+                            </lightning-input>
+                        </div>
 
-                <lightning-input
-                    type="text"
-                    label="Last Name"
-                    value={lastName}
-                    required
-                    onchange={handleLastNameChange}>
-                </lightning-input>
-
-                <lightning-input
-                    type="tel"
-                    label="Phone"
-                    value={phone}
-                    required
-                    onchange={handlePhoneChange}>
-                </lightning-input>
-
-                <lightning-input
-                    type="email"
-                    label="Email"
-                    value={email}
-                    onchange={handleEmailChange}>
-                </lightning-input>
-
-                <lightning-textarea
-                    label="Message"
-                    value={message}
-                    onchange={handleMessageChange}>
-                </lightning-textarea>
-
-                <template if:true={error}>
-                    <div class="slds-text-color_error slds-m-top_small">
-                        {error}
+                        <div class="slds-col slds-size_1-of-1">
+                            <lightning-textarea
+                                class="custom-textarea"
+                                label="Message"
+                                value={message}
+                                onchange={handleMessageChange}>
+                            </lightning-textarea>
+                        </div>
                     </div>
+
+                    <template if:true={error}>
+                        <div class="error-msg slds-m-top_small">
+                            <lightning-icon icon-name="utility:warning" size="x-small" variant="error"></lightning-icon>
+                            <span class="slds-m-left_x-small">{error}</span>
+                        </div>
+                    </template>
+
+                    <div class="slds-m-top_large submit-container">
+                        <lightning-button
+                            class="emerald-btn custom-brand-btn"
+                            variant="brand"
+                            label="Submit Enquiry"
+                            onclick={handleSubmit}>
+                        </lightning-button>
+                    </div>
+
                 </template>
 
-                <div class="slds-m-top_medium">
-
-                    <lightning-button
-                        variant="brand"
-                        label="Submit Enquiry"
-                        onclick={handleSubmit}>
-                    </lightning-button>
-
-                </div>
-
-            </template>
-
-            <template if:true={isSuccess}>
-                <div class="slds-text-heading_small slds-text-color_success">
-                    ✅ Thank you! Our team will contact you shortly.
-                </div>
-                <div class="slds-m-top_medium">
-                    <lightning-button
-                        variant="brand"
-                        label="Close"
-                        onclick={handleClose}>
-                    </lightning-button>
-                </div>
-            </template>
-
+                <template if:true={isSuccess}>
+                    <div class="success-msg">
+                        <lightning-icon icon-name="utility:success" size="medium" variant="success"></lightning-icon>
+                        <h3 class="slds-m-top_medium">Thank you!</h3>
+                        <p>Our team will contact you shortly.</p>
+                    </div>
+                </template>
+            </div>
         </div>
-
-    </lightning-card>
+    </article>
 </template>

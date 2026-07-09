@@ -1,22 +1,93 @@
 :host {
     display: block;
+    --ph-brand: #1f8a4c;
+    --ph-brand-deep: #0e4a27;
+    font-family: 'Inter', sans-serif;
 }
 
-.slds-p-around_medium {
-    padding: 1.25rem !important;
+.lead-form-wrapper {
+    display: flex;
+    justify-content: center;
+    padding: 2rem 1rem;
 }
 
-lightning-card {
-    --slds-c-card-color-border: transparent;
-}
-
-lightning-combobox,
-lightning-input,
-lightning-textarea {
-    margin-bottom: 0.9rem;
-    display: block;
-}
-
-.slds-m-top_medium lightning-button {
+.lead-form-card {
+    background: #ffffff;
     width: 100%;
+    max-width: 650px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    border: 1px solid #e2e8f0;
+    overflow: hidden;
+}
+
+.form-title {
+    background: linear-gradient(135deg, #f8fafc 0%, #edf6f0 100%);
+    padding: 1.5rem 2rem;
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1px solid #e2e8f0;
+    margin: 0;
+}
+
+.form-grid lightning-combobox,
+.form-grid lightning-input,
+.form-grid lightning-textarea {
+    margin-bottom: 1rem;
+}
+
+.form-grid lightning-textarea {
+    --slds-c-textarea-sizing-min-height: 100px;
+}
+
+/* Emerald Button Override */
+.emerald-btn {
+    display: block;
+    width: 100%;
+}
+
+.emerald-btn :deep(.slds-button_brand) {
+    width: 100%;
+    background: linear-gradient(135deg, var(--ph-brand) 0%, var(--ph-brand-deep) 100%);
+    border: none;
+    height: 48px;
+    border-radius: 24px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    box-shadow: 0 6px 15px rgba(31, 138, 76, 0.2);
+    transition: all 0.3s ease;
+}
+
+.emerald-btn :deep(.slds-button_brand:hover) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(14, 74, 39, 0.3);
+}
+
+.error-msg {
+    color: #be123c;
+    background: #fff1f2;
+    padding: 0.75rem;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    font-size: 0.95rem;
+    font-weight: 500;
+}
+
+.success-msg {
+    text-align: center;
+    padding: 3rem 1rem;
+}
+
+.success-msg h3 {
+    font-size: 1.5rem;
+    color: var(--ph-brand-deep);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.success-msg p {
+    color: #64748b;
+    font-size: 1.1rem;
 }

@@ -1,0 +1,66 @@
+<template>
+    <div class="login-wrapper">
+        <div class="login-card">
+            
+            <div class="login-icon-container">
+                <div class="avatar-circle">
+                    <lightning-icon icon-name="utility:user" size="medium" class="avatar-icon"></lightning-icon>
+                </div>
+            </div>
+
+            <div class="login-header">
+                <h2>Welcome Back!</h2>
+                <p>Please sign in to your account to continue</p>
+            </div>
+
+            <template if:true={errorMsg}>
+                <div class="error-banner slds-m-bottom_medium">
+                    <lightning-icon icon-name="utility:warning" size="small" variant="error" class="slds-m-right_x-small"></lightning-icon>
+                    {errorMsg}
+                </div>
+            </template>
+
+            <form class="login-form">
+                <div class="input-group">
+                    <label for="usernameInput" class="input-label">Username</label>
+                    <div class="input-bound">
+                        <lightning-icon icon-name="utility:user" size="x-small" class="input-icon"></lightning-icon>
+                        <input type="text" id="usernameInput" class="custom-input" placeholder="Enter your username" value={username} oninput={handleUsernameChange} onkeypress={handleKeyPress} required />
+                    </div>
+                </div>
+
+                <div class="input-group">
+                    <label for="passwordInput" class="input-label">Password</label>
+                    <div class="input-bound">
+                        <lightning-icon icon-name="utility:lock" size="x-small" class="input-icon"></lightning-icon>
+                        <input type={passwordFieldType} id="passwordInput" class="custom-input" placeholder="Enter your password" value={password} oninput={handlePasswordChange} onkeypress={handleKeyPress} required />
+                        <button type="button" class="password-toggle" onclick={togglePasswordVisibility} title="Toggle Password Visibility">
+                            <lightning-icon icon-name={passwordIconName} size="x-small"></lightning-icon>
+                        </button>
+                    </div>
+                </div>
+
+                <button type="button" class="submit-btn" onclick={handleLogin} disabled={isLoading}>
+                    <template if:false={isLoading}>Log In</template>
+                    <template if:true={isLoading}>
+                        <div class="spinner"></div> Signing In...
+                    </template>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <div class="divider-text">
+                    <span>or</span>
+                </div>
+                
+                <a href={forgotPasswordUrl} class="footer-link">Forgot your password?</a>
+                
+                <div class="divider"></div>
+                
+                <div class="employee-login-text">
+                    Are you an employee? <a href={employeeLoginUrl} class="footer-link-alt">Log in</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>

@@ -1,0 +1,88 @@
+<template>
+    <article class="profile-page-container">
+        <!-- Profile Header -->
+        <div class="profile-hero slds-grid slds-grid_vertical-align-center">
+            <div class="avatar-block">
+                <span class="avatar-silhouette">👤</span>
+            </div>
+            <div class="user-intro">
+                <h1 class="user-greeting">My Profile</h1>
+                <p class="user-support-text">Manage your personal details and contact information.</p>
+            </div>
+        </div>
+
+        <!-- Profile Form Card -->
+        <div class="profile-card">
+            <template if:true={userId}>
+                <lightning-record-edit-form
+                    object-api-name="User"
+                    record-id={userId}
+                    onsuccess={handleSuccess}
+                    onerror={handleError}
+                    onload={handleLoad}
+                    onsubmit={handleSubmit}
+                >
+                    <lightning-messages></lightning-messages>
+
+                    <div class="slds-grid slds-wrap slds-gutters">
+                        <!-- Left Column -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="form-field-wrapper">
+                                <lightning-input-field field-name="FirstName" disabled={isReadOnly}></lightning-input-field>
+                            </div>
+                            <div class="form-field-wrapper">
+                                <lightning-input-field field-name="Email" disabled="true"></lightning-input-field>
+                            </div>
+                            <div class="form-field-wrapper">
+                                <lightning-input-field field-name="Title" disabled={isReadOnly}></lightning-input-field>
+                            </div>
+                        </div>
+
+                        <!-- Right Column -->
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <div class="form-field-wrapper">
+                                <lightning-input-field field-name="LastName" disabled={isReadOnly}></lightning-input-field>
+                            </div>
+                            <div class="form-field-wrapper">
+                                <lightning-input-field field-name="MobilePhone" disabled={isReadOnly}></lightning-input-field>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Footer Actions -->
+                    <div class="profile-actions slds-m-top_large">
+                        <template if:true={isReadOnly}>
+                            <lightning-button 
+                                label="Edit Profile" 
+                                variant="brand" 
+                                class="edit-btn-custom" 
+                                onclick={toggleEditMode}>
+                            </lightning-button>
+                        </template>
+
+                        <template if:false={isReadOnly}>
+                            <lightning-button 
+                                label="Cancel" 
+                                variant="neutral" 
+                                class="cancel-btn-custom slds-m-right_medium" 
+                                onclick={toggleEditMode}>
+                            </lightning-button>
+                            <lightning-button 
+                                label="Save Changes" 
+                                variant="brand" 
+                                type="submit" 
+                                class="save-btn-custom" 
+                                disabled={isSaving}>
+                            </lightning-button>
+                        </template>
+                    </div>
+                </lightning-record-edit-form>
+            </template>
+            <template if:false={userId}>
+                <div class="slds-p-around_medium slds-text-align_center slds-text-color_weak">
+                    Please log in to view your profile.
+                </div>
+            </template>
+        </div>
+    </article>
+</template>

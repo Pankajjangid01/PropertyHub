@@ -4,6 +4,9 @@ public with sharing class BookingPrefillController {
         @AuraEnabled public Id opportunityId;
         @AuraEnabled public Id propertyId;
         @AuraEnabled public String quotationStatus;
+        @AuraEnabled public Boolean hasBooking;
+        @AuraEnabled public String bookingName;
+        @AuraEnabled public Id bookingId;
     }
 
     @AuraEnabled(cacheable=true)
@@ -26,6 +29,15 @@ public with sharing class BookingPrefillController {
         data.opportunityId = quotation.Opportunity__c;
         data.propertyId = quotation.Property__c;
         data.quotationStatus = quotation.Quotation_Status__c;
+
+        List<Booking__c> existingBookings = [SELECT Id, Name FROM Booking__c WHERE Quotation__c = :quotationId LIMIT 1];
+        if (!existingBookings.isEmpty()) {
+            data.hasBooking = true;
+            data.bookingName = existingBookings[0].Name;
+            data.bookingId = existingBookings[0].Id;
+        } else {
+            data.hasBooking = false;
+        }
 
         return data;
     }

@@ -15,11 +15,23 @@ export default class CreateBookingFromQuotation extends NavigationMixin(Lightnin
     }
 
     get showButton() {
-        return this.prefillData && this.prefillData.quotationStatus === 'Accepted';
+        return this.prefillData && this.prefillData.quotationStatus === 'Accepted' && !this.prefillData.hasBooking;
     }
 
     get showIneligibleMessage() {
         return this.prefillData && this.prefillData.quotationStatus !== 'Accepted';
+    }
+
+    get showBookingCreatedMessage() {
+        return this.prefillData && this.prefillData.hasBooking;
+    }
+
+    get bookingName() {
+        return this.prefillData ? this.prefillData.bookingName : '';
+    }
+
+    get bookingUrl() {
+        return this.prefillData ? `/${this.prefillData.bookingId}` : '#';
     }
 
     handleCreateBooking() {

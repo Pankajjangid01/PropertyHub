@@ -9,8 +9,20 @@ public with sharing class PaymentTriggerHandler {
 
     public static void handleAfterUpdate(List<Payment__c> newPayments, Map<Id, Payment__c> oldPaymentsMap) {
         List<Payment__c> receivedPayments = filterReceived(newPayments, oldPaymentsMap);
+        List<Payment__c> paidPayments = new List<Payment__c>();
+        
+        for (Payment__c p : newPayments) {
+            Payment__c oldP = oldPaymentsMap.get(p.Id);
+            if (p.Payment_Status__c == 'Received' && oldP.Payment_Status__c != 'Received') {
+                paidPayments.add(p);
+            }
+        }
         if (!receivedPayments.isEmpty()) {
             PropertyStatusService.evaluateFullPayment(receivedPayments);
+        }
+
+        if (!paidPayments.isEmpty()) {
+            PaymentEmailService.sendPaymentSuccessEmail(paidPayments);
         }
     }
 

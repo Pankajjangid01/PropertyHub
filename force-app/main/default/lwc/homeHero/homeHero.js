@@ -16,6 +16,9 @@ export default class HomeHero extends NavigationMixin(LightningElement) {
 
     @wire(getFeaturedProjects)
     wiredProjects({ data, error }) {
+        console.log('--- [DEBUG homeHero] Data payload:', data ? JSON.parse(JSON.stringify(data)) : 'null');
+        console.log('--- [DEBUG homeHero] Error payload:', error ? JSON.parse(JSON.stringify(error)) : 'null');
+        
         if (data) {
             this.projects = data.map((project) => ({
                 ...project,

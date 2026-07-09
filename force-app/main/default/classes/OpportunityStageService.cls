@@ -9,7 +9,8 @@ public with sharing class OpportunityStageService {
         'Negotiation/Review' => 6,
         'Quotation Accepted' => 7,
         'Booking Confirmed' => 8,
-        'Closed Won' => 9
+        'Closed Won' => 9,
+        'Closed Lost' => 10
     };
 
     public static void advanceStage(Id opportunityId, String newStage) {
