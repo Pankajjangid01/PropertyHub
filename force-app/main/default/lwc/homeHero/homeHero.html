@@ -23,6 +23,19 @@
                 <h2 class="section-title">Featured Projects</h2>
             </div>
 
+            <div class="filter-bar">
+                <template for:each={filterOptions} for:item="f">
+                    <button
+                        key={f.value}
+                        class={f.class}
+                        data-value={f.value}
+                        onclick={handleFilterClick}
+                    >
+                        {f.label}
+                    </button>
+                </template>
+            </div>
+
             <template if:true={hasProjects}>
                 <div class="projects-grid">
                     <template for:each={featuredProjects} for:item="proj">

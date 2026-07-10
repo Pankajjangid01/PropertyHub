@@ -1,0 +1,15 @@
+<template>
+    <template if:true={showSwitcher}>
+        <div class="currency-switcher-container">
+            <div class="switcher-box">
+                <lightning-icon icon-name="utility:currency" size="x-small" class="switcher-icon"></lightning-icon>
+                <span class="switcher-label">Currency:</span>
+                <select class="custom-select" onchange={handleChange}>
+                    <template for:each={currencies} for:item="c">
+                        <option key={c.value} value={c.value} selected={c.selected}>{c.label}</option>
+                    </template>
+                </select>
+            </div>
+        </div>
+    </template>
+</template>

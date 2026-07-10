@@ -1,7 +1,19 @@
 <template>
     <section class="listing-page">
         <div class="listing-header">
-            <h1 class="listing-title">Available Properties</h1>
+            <div class="header-top">
+                <h1 class="listing-title">Available Properties</h1>
+                
+                <div class="project-filter-wrapper">
+                    <span class="filter-label">Filter by Project:</span>
+                    <select class="custom-filter-select" onchange={handleProjectChange}>
+                        <option value="">All Projects</option>
+                        <template for:each={projectOptions} for:item="opt">
+                            <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                        </template>
+                    </select>
+                </div>
+            </div>
 
             <template if:true={activeProjectName}>
                 <div class="filter-chip">
@@ -36,6 +48,9 @@
 
                         <div class="property-info">
                             <h3 class="property-name">{prop.propertyName}</h3>
+                            <template if:true={prop.projectName}>
+                                <p class="project-name-badge">🏢 {prop.projectName}</p>
+                            </template>
                             <p class="property-meta">{prop.propertyType} • {prop.areaSqft} sqft</p>
                             <p class="property-price">{prop.priceLabel}</p>
                         </div>

@@ -1,4 +1,6 @@
 import { LightningElement, api, wire } from 'lwc';
+import LOCALE from '@salesforce/i18n/locale';
+import CURRENCY from '@salesforce/i18n/currency';
 import { CurrentPageReference } from 'lightning/navigation';
 import getMyQuotations from '@salesforce/apex/QuotationPortalController.getMyQuotations';
 import getQuotationFiles from '@salesforce/apex/QuotationPortalController.getQuotationFiles';
@@ -23,7 +25,7 @@ export default class QuotationDetail extends LightningElement {
             if (found) {
                 this.quotation = {
                     ...found,
-                    formattedTotal: found.totalAmount ? `Rs. ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(found.totalAmount)}` : 'N/A'
+                    formattedTotal: found.totalAmount ? new Intl.NumberFormat(LOCALE, { style: 'currency', currency: CURRENCY, maximumFractionDigits: 0 }).format(found.totalAmount) : 'N/A'
                 };
             }
         } else if (error) {

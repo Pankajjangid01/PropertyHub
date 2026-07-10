@@ -9,16 +9,16 @@ public with sharing class ProjectShowcaseController {
         @AuraEnabled public Integer propertyCount;
         @AuraEnabled public Decimal minPrice;
         @AuraEnabled public Decimal maxPrice;
+        @AuraEnabled public String displayCurrency;
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<ProjectWrapper> getFeaturedProjects() {
+    public static List<ProjectWrapper> getFeaturedProjects(String preferredCurrency) {
 
         List<Property_Project__c> projects = [
             SELECT Id, Name, Location__c, Builder_Name__c, Project_Status__c
             FROM Property_Project__c
             ORDER BY CreatedDate DESC
-            LIMIT 6
         ];
 
         if (projects.isEmpty()) {
@@ -30,12 +30,14 @@ public with sharing class ProjectShowcaseController {
             projectIds.add(proj.Id);
         }
 
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
         Map<Id, Integer> countMap = new Map<Id, Integer>();
         Map<Id, Decimal> minPriceMap = new Map<Id, Decimal>();
         Map<Id, Decimal> maxPriceMap = new Map<Id, Decimal>();
 
         for (Property__c prop : [
-            SELECT Id, Property_Project__c, Price__c
+            SELECT Id, Property_Project__c, Price__c, CurrencyIsoCode
             FROM Property__c
             WHERE Property_Project__c IN :projectIds AND Status__c = 'Available'
         ]) {
@@ -45,11 +47,17 @@ public with sharing class ProjectShowcaseController {
             countMap.put(projId, currentCount + 1);
 
             if (prop.Price__c != null) {
-                if (!minPriceMap.containsKey(projId) || prop.Price__c < minPriceMap.get(projId)) {
-                    minPriceMap.put(projId, prop.Price__c);
+                Decimal priceForCompare = prop.Price__c;
+
+                if (targetCurrency != null && targetCurrency != prop.CurrencyIsoCode) {
+                    priceForCompare = CurrencyConversionService.convertAmount(prop.Price__c, prop.CurrencyIsoCode, targetCurrency);
                 }
-                if (!maxPriceMap.containsKey(projId) || prop.Price__c > maxPriceMap.get(projId)) {
-                    maxPriceMap.put(projId, prop.Price__c);
+
+                if (!minPriceMap.containsKey(projId) || priceForCompare < minPriceMap.get(projId)) {
+                    minPriceMap.put(projId, priceForCompare);
+                }
+                if (!maxPriceMap.containsKey(projId) || priceForCompare > maxPriceMap.get(projId)) {
+                    maxPriceMap.put(projId, priceForCompare);
                 }
             }
         }
@@ -65,6 +73,7 @@ public with sharing class ProjectShowcaseController {
             pw.propertyCount = countMap.containsKey(proj.Id) ? countMap.get(proj.Id) : 0;
             pw.minPrice = minPriceMap.get(proj.Id);
             pw.maxPrice = maxPriceMap.get(proj.Id);
+            pw.displayCurrency = targetCurrency;
             result.add(pw);
         }
 

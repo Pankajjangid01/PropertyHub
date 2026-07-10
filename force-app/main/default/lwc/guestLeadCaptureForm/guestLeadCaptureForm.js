@@ -1,6 +1,7 @@
 import { LightningElement, api, wire } from 'lwc';
 import { CurrentPageReference } from 'lightning/navigation';
 import submitEnquiry from '@salesforce/apex/GuestLeadCaptureController.submitEnquiry';
+import getAvailableCountries from '@salesforce/apex/GuestLeadCaptureController.getAvailableCountries';
 
 export default class GuestLeadCaptureForm extends LightningElement {
 
@@ -11,15 +12,26 @@ export default class GuestLeadCaptureForm extends LightningElement {
     lastName = '';
     phone = '';
     email = '';
+    country = '';
     message = '';
 
     isSuccess = false;
     error;
+    rawCountries;
 
     @wire(CurrentPageReference)
     getPageRef(pageRef) {
         if (pageRef && pageRef.state && pageRef.state.recordId) {
             this.propertyId = pageRef.state.recordId;
+        }
+    }
+
+    @wire(getAvailableCountries)
+    wiredCountries({ data, error }) {
+        if (data) {
+            this.rawCountries = data;
+        } else if (error) {
+            this.rawCountries = [];
         }
     }
 
@@ -30,6 +42,13 @@ export default class GuestLeadCaptureForm extends LightningElement {
             { label: 'Ms.', value: 'Ms.' },
             { label: 'Dr.', value: 'Dr.' }
         ];
+    }
+
+    get countryOptions() {
+        if (!this.rawCountries) {
+            return [];
+        }
+        return this.rawCountries.map((c) => ({ label: c, value: c }));
     }
 
     handleSalutationChange(event) {
@@ -52,6 +71,10 @@ export default class GuestLeadCaptureForm extends LightningElement {
         this.email = event.detail.value;
     }
 
+    handleCountryChange(event) {
+        this.country = event.detail.value;
+    }
+
     handleMessageChange(event) {
         this.message = event.detail.value;
     }
@@ -59,7 +82,7 @@ export default class GuestLeadCaptureForm extends LightningElement {
     handleSubmit() {
         this.error = '';
 
-        const allValid = [...this.template.querySelectorAll('lightning-input')]
+        const allValid = [...this.template.querySelectorAll('lightning-input, lightning-combobox')]
             .reduce((validSoFar, inputCmp) => {
                 inputCmp.reportValidity();
                 return validSoFar && inputCmp.checkValidity();
@@ -75,6 +98,7 @@ export default class GuestLeadCaptureForm extends LightningElement {
             lastName: this.lastName,
             phone: this.phone,
             email: this.email,
+            country: this.country,
             message: this.message,
             propertyId: this.propertyId
         })

@@ -6,6 +6,9 @@ public with sharing class PaymentPortalController {
         @AuraEnabled public String bookingName;
         @AuraEnabled public String propertyName;
         @AuraEnabled public Decimal amount;
+        @AuraEnabled public String originalCurrency;
+        @AuraEnabled public Decimal convertedAmount;
+        @AuraEnabled public String displayCurrency;
         @AuraEnabled public String paymentDate;
         @AuraEnabled public String paymentStatus;
         @AuraEnabled public String paymentMode;
@@ -17,7 +20,7 @@ public with sharing class PaymentPortalController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<PaymentWrapper> getMyPayments() {
+    public static List<PaymentWrapper> getMyPayments(String preferredCurrency) {
         Id currentContactId = [SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()].ContactId;
 
         List<PaymentWrapper> result = new List<PaymentWrapper>();
@@ -25,8 +28,10 @@ public with sharing class PaymentPortalController {
             return result;
         }
 
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
         List<Payment__c> payments = [
-            SELECT Id, Name, Amount__c, Payment_Date__c, Payment_Status__c, Payment_Mode__c,
+            SELECT Id, Name, Amount__c, CurrencyIsoCode, Payment_Date__c, Payment_Status__c, Payment_Mode__c,
                    Booking__r.Name, Booking__r.Property__r.Name
             FROM Payment__c
             WHERE Portal_Contact__c = :currentContactId
@@ -42,9 +47,19 @@ public with sharing class PaymentPortalController {
                 ? p.Booking__r.Property__r.Name
                 : null;
             pw.amount = p.Amount__c;
+            pw.originalCurrency = p.CurrencyIsoCode;
             pw.paymentDate = p.Payment_Date__c != null ? p.Payment_Date__c.format() : null;
             pw.paymentStatus = p.Payment_Status__c;
             pw.paymentMode = p.Payment_Mode__c;
+
+            if (targetCurrency != null && targetCurrency != p.CurrencyIsoCode && p.Amount__c != null) {
+                pw.convertedAmount = CurrencyConversionService.convertAmount(p.Amount__c, p.CurrencyIsoCode, targetCurrency);
+                pw.displayCurrency = targetCurrency;
+            } else {
+                pw.convertedAmount = p.Amount__c;
+                pw.displayCurrency = p.CurrencyIsoCode;
+            }
+
             result.add(pw);
         }
 

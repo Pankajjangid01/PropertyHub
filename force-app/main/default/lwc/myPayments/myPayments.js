@@ -1,5 +1,8 @@
 import { LightningElement, wire } from 'lwc';
+import LOCALE from '@salesforce/i18n/locale';
 import { NavigationMixin } from 'lightning/navigation';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
+import CurrencyChangeChannel from '@salesforce/messageChannel/CurrencyChangeChannel__c';
 import getMyPayments from '@salesforce/apex/PaymentPortalController.getMyPayments';
 
 const STATUS_CLASS_MAP = {
@@ -8,11 +11,41 @@ const STATUS_CLASS_MAP = {
     Failed: 'status-badge status-rejected'
 };
 
+const STORAGE_KEY = 'preferredCurrency';
+
 export default class MyPayments extends NavigationMixin(LightningElement) {
     rawPayments;
     error;
+    preferredCurrency;
+    subscription;
 
-    @wire(getMyPayments)
+    @wire(MessageContext)
+    messageContext;
+
+    connectedCallback() {
+        this.preferredCurrency = window.localStorage.getItem(STORAGE_KEY) || null;
+        this.subscribeToCurrencyChange();
+    }
+
+    disconnectedCallback() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    subscribeToCurrencyChange() {
+        if (this.subscription) {
+            return;
+        }
+        this.subscription = subscribe(
+            this.messageContext,
+            CurrencyChangeChannel,
+            (message) => {
+                this.preferredCurrency = message.currencyCode;
+            }
+        );
+    }
+
+    @wire(getMyPayments, { preferredCurrency: '$preferredCurrency' })
     wiredPayments({ data, error }) {
         if (data) {
             this.rawPayments = data;
@@ -30,7 +63,7 @@ export default class MyPayments extends NavigationMixin(LightningElement) {
         return this.rawPayments.map((p) => ({
             ...p,
             statusClass: STATUS_CLASS_MAP[p.paymentStatus] || 'status-badge status-default',
-            formattedAmount: this.formatCurrency(p.amount)
+            formattedAmount: this.formatCurrency(p.convertedAmount, p.displayCurrency)
         }));
     }
 
@@ -38,11 +71,13 @@ export default class MyPayments extends NavigationMixin(LightningElement) {
         return this.payments && this.payments.length > 0;
     }
 
-    formatCurrency(value) {
-        if (value === null || value === undefined) {
-            return 'Rs. 0';
-        }
-        return `Rs. ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)}`;
+    formatCurrency(value, currencyCode) {
+        const amount = value === null || value === undefined ? 0 : value;
+        return new Intl.NumberFormat(LOCALE, {
+            style: 'currency',
+            currency: currencyCode || 'USD',
+            maximumFractionDigits: 0
+        }).format(amount);
     }
 
     handleRowClick(event) {

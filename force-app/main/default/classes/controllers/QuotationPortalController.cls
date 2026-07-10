@@ -5,6 +5,9 @@ public with sharing class QuotationPortalController {
         @AuraEnabled public String quotationName;
         @AuraEnabled public String quotationStatus;
         @AuraEnabled public Decimal totalAmount;
+        @AuraEnabled public String originalCurrency;
+        @AuraEnabled public Decimal convertedTotal;
+        @AuraEnabled public String displayCurrency;
         @AuraEnabled public String propertyName;
     }
 
@@ -14,7 +17,7 @@ public with sharing class QuotationPortalController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<QuotationWrapper> getMyQuotations() {
+    public static List<QuotationWrapper> getMyQuotations(String preferredCurrency) {
 
         Id currentContactId = [
             SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()
@@ -25,8 +28,10 @@ public with sharing class QuotationPortalController {
             return result;
         }
 
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
         List<Quotation__c> quotations = [
-            SELECT Id, Name, Quotation_Status__c, Total_Amount__c, Property__r.Name
+            SELECT Id, Name, Quotation_Status__c, Total_Amount__c, CurrencyIsoCode, Property__r.Name
             FROM Quotation__c
             WHERE Portal_Contact__c = :currentContactId
             ORDER BY CreatedDate DESC
@@ -38,7 +43,17 @@ public with sharing class QuotationPortalController {
             qw.quotationName = q.Name;
             qw.quotationStatus = q.Quotation_Status__c;
             qw.totalAmount = q.Total_Amount__c;
+            qw.originalCurrency = q.CurrencyIsoCode;
             qw.propertyName = q.Property__r != null ? q.Property__r.Name : null;
+
+            if (targetCurrency != null && targetCurrency != q.CurrencyIsoCode && q.Total_Amount__c != null) {
+                qw.convertedTotal = CurrencyConversionService.convertAmount(q.Total_Amount__c, q.CurrencyIsoCode, targetCurrency);
+                qw.displayCurrency = targetCurrency;
+            } else {
+                qw.convertedTotal = q.Total_Amount__c;
+                qw.displayCurrency = q.CurrencyIsoCode;
+            }
+
             result.add(qw);
         }
 

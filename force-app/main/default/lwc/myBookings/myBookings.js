@@ -1,4 +1,7 @@
 import { LightningElement, wire } from 'lwc';
+import LOCALE from '@salesforce/i18n/locale';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
+import CurrencyChangeChannel from '@salesforce/messageChannel/CurrencyChangeChannel__c';
 import getMyBookings from '@salesforce/apex/BookingPortalController.getMyBookings';
 
 const STATUS_CLASS_MAP = {
@@ -8,11 +11,41 @@ const STATUS_CLASS_MAP = {
     'Cancelled': 'status-badge status-cancelled'
 };
 
+const STORAGE_KEY = 'preferredCurrency';
+
 export default class MyBookings extends LightningElement {
     rawBookings;
     error;
+    preferredCurrency;
+    subscription;
 
-    @wire(getMyBookings)
+    @wire(MessageContext)
+    messageContext;
+
+    connectedCallback() {
+        this.preferredCurrency = window.localStorage.getItem(STORAGE_KEY) || null;
+        this.subscribeToCurrencyChange();
+    }
+
+    disconnectedCallback() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    subscribeToCurrencyChange() {
+        if (this.subscription) {
+            return;
+        }
+        this.subscription = subscribe(
+            this.messageContext,
+            CurrencyChangeChannel,
+            (message) => {
+                this.preferredCurrency = message.currencyCode;
+            }
+        );
+    }
+
+    @wire(getMyBookings, { preferredCurrency: '$preferredCurrency' })
     wiredBookings({ data, error }) {
         if (data) {
             this.rawBookings = data;
@@ -31,9 +64,9 @@ export default class MyBookings extends LightningElement {
             return {
                 ...b,
                 statusClass: STATUS_CLASS_MAP[b.bookingStatus] || 'status-badge status-default',
-                formattedTotal: this.formatCurrency(b.totalAmount),
-                formattedPaid: this.formatCurrency(b.amountPaid),
-                formattedBalance: this.formatCurrency(b.balanceDue),
+                formattedTotal: this.formatCurrency(b.convertedTotal, b.displayCurrency),
+                formattedPaid: this.formatCurrency(b.convertedPaid, b.displayCurrency),
+                formattedBalance: this.formatCurrency(b.convertedBalance, b.displayCurrency),
                 progressStyle: `width: ${b.paidPercentage}%`
             };
         });
@@ -43,10 +76,12 @@ export default class MyBookings extends LightningElement {
         return this.bookings && this.bookings.length > 0;
     }
 
-    formatCurrency(value) {
-        if (value === null || value === undefined) {
-            return 'Rs. 0';
-        }
-        return `Rs. ${new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 }).format(value)}`;
+    formatCurrency(value, currencyCode) {
+        const amount = value === null || value === undefined ? 0 : value;
+        return new Intl.NumberFormat(LOCALE, {
+            style: 'currency',
+            currency: currencyCode || 'USD',
+            maximumFractionDigits: 0
+        }).format(amount);
     }
 }

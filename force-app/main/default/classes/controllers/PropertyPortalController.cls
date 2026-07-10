@@ -6,14 +6,18 @@ public without sharing class PropertyPortalController {
         @AuraEnabled public String propertyType;
         @AuraEnabled public Decimal areaSqft;
         @AuraEnabled public Decimal price;
+        @AuraEnabled public String originalCurrency;
+        @AuraEnabled public Decimal convertedPrice;
+        @AuraEnabled public String displayCurrency;
         @AuraEnabled public String status;
         @AuraEnabled public String thumbnailUrl;
+        @AuraEnabled public String projectName;
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<PropertyWrapper> getAvailableProperties(Id projectId) {
+    public static List<PropertyWrapper> getAvailableProperties(Id projectId, String preferredCurrency) {
 
-        String query = 'SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Status__c ' +
+        String query = 'SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, CurrencyIsoCode, Status__c, Property_Project__r.Name ' +
                         'FROM Property__c WHERE Status__c = \'Available\'';
 
         if (projectId != null) {
@@ -52,6 +56,8 @@ public without sharing class PropertyPortalController {
             }
         }
 
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
         for (Property__c p : properties) {
             PropertyWrapper pw = new PropertyWrapper();
             pw.propertyId = p.Id;
@@ -59,19 +65,32 @@ public without sharing class PropertyPortalController {
             pw.propertyType = p.Property_Type__c;
             pw.areaSqft = p.Area_Sqft__c;
             pw.price = p.Price__c;
+            pw.originalCurrency = p.CurrencyIsoCode;
             pw.status = p.Status__c;
             pw.thumbnailUrl = propertyIdToThumbnailUrl.get(p.Id);
+            pw.projectName = p.Property_Project__r?.Name;
+
+            if (targetCurrency != null && targetCurrency != p.CurrencyIsoCode) {
+                pw.convertedPrice = CurrencyConversionService.convertAmount(p.Price__c, p.CurrencyIsoCode, targetCurrency);
+                pw.displayCurrency = targetCurrency;
+            } else {
+                pw.convertedPrice = p.Price__c;
+                pw.displayCurrency = p.CurrencyIsoCode;
+            }
+
             result.add(pw);
         }
 
         return result;
     }
-
-    public class PropertyDetailWrapper {
+public class PropertyDetailWrapper {
         @AuraEnabled public String propertyName;
         @AuraEnabled public String propertyType;
         @AuraEnabled public Decimal areaSqft;
         @AuraEnabled public Decimal price;
+        @AuraEnabled public String originalCurrency;
+        @AuraEnabled public Decimal convertedPrice;
+        @AuraEnabled public String displayCurrency;
         @AuraEnabled public Decimal bedrooms;
         @AuraEnabled public String status;
         @AuraEnabled public String projectName;
@@ -79,10 +98,11 @@ public without sharing class PropertyPortalController {
     }
 
     @AuraEnabled(cacheable=true)
-    public static PropertyDetailWrapper getPropertyDetail(Id propertyId) {
+    public static PropertyDetailWrapper getPropertyDetail(Id propertyId, String preferredCurrency) {
 
         Property__c prop = [
-            SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, Bedrooms__c, Status__c, Property_Project__r.Name
+            SELECT Id, Name, Property_Type__c, Area_Sqft__c, Price__c, CurrencyIsoCode,
+                   Bedrooms__c, Status__c, Property_Project__r.Name
             FROM Property__c
             WHERE Id = :propertyId
             LIMIT 1
@@ -93,9 +113,20 @@ public without sharing class PropertyPortalController {
         detail.propertyType = prop.Property_Type__c;
         detail.areaSqft = prop.Area_Sqft__c;
         detail.price = prop.Price__c;
+        detail.originalCurrency = prop.CurrencyIsoCode;
         detail.bedrooms = prop.Bedrooms__c;
         detail.status = prop.Status__c;
         detail.projectName = prop.Property_Project__r.Name;
+
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
+        if (targetCurrency != null && targetCurrency != prop.CurrencyIsoCode) {
+            detail.convertedPrice = CurrencyConversionService.convertAmount(prop.Price__c, prop.CurrencyIsoCode, targetCurrency);
+            detail.displayCurrency = targetCurrency;
+        } else {
+            detail.convertedPrice = prop.Price__c;
+            detail.displayCurrency = prop.CurrencyIsoCode;
+        }
 
         List<String> images = new List<String>();
         List<ContentDocumentLink> links = [

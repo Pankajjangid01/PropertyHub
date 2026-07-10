@@ -1,5 +1,16 @@
 public without sharing class GuestLeadCaptureController {
 
+    @AuraEnabled(cacheable=true)
+    public static List<String> getAvailableCountries() {
+        List<String> countries = new List<String>();
+        for (Country_Currency_Mapping__mdt mapping : [
+            SELECT Country_Name__c FROM Country_Currency_Mapping__mdt ORDER BY Country_Name__c ASC
+        ]) {
+            countries.add(mapping.Country_Name__c);
+        }
+        return countries;
+    }
+
     @AuraEnabled
     public static void submitEnquiry(
         String salutation,
@@ -7,6 +18,7 @@ public without sharing class GuestLeadCaptureController {
         String lastName,
         String phone,
         String email,
+        String country,
         String message,
         Id propertyId
     ) {
@@ -22,6 +34,7 @@ public without sharing class GuestLeadCaptureController {
         newLead.LastName = lastName;
         newLead.Phone = phone;
         newLead.Email = email;
+        newLead.Country = country;
         newLead.Company = 'Individual';
         newLead.LeadSource = 'Web';
         newLead.Description = message;

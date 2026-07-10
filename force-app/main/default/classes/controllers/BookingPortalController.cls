@@ -11,11 +11,16 @@ public with sharing class BookingPortalController {
         @AuraEnabled public Decimal amountPaid;
         @AuraEnabled public Decimal balanceDue;
         @AuraEnabled public Decimal paidPercentage;
+        @AuraEnabled public String originalCurrency;
+        @AuraEnabled public Decimal convertedTotal;
+        @AuraEnabled public Decimal convertedPaid;
+        @AuraEnabled public Decimal convertedBalance;
+        @AuraEnabled public String displayCurrency;
         @AuraEnabled public String thumbnailUrl;
     }
 
     @AuraEnabled(cacheable=true)
-    public static List<BookingWrapper> getMyBookings() {
+    public static List<BookingWrapper> getMyBookings(String preferredCurrency) {
 
         Id currentContactId = [
             SELECT ContactId FROM User WHERE Id = :UserInfo.getUserId()
@@ -27,8 +32,10 @@ public with sharing class BookingPortalController {
             return result;
         }
 
+        String targetCurrency = String.isNotBlank(preferredCurrency) ? preferredCurrency : null;
+
         List<Booking__c> bookings = [
-            SELECT Id, Name, Booking_Status__c, Booking_Date__c,
+            SELECT Id, Name, Booking_Status__c, Booking_Date__c, CurrencyIsoCode,
                    Property__c, Property__r.Name, Property__r.Property_Type__c,
                    Quotation__c, Quotation__r.Total_Amount__c
             FROM Booking__c
@@ -96,6 +103,19 @@ public with sharing class BookingPortalController {
             bw.amountPaid = paid;
             bw.balanceDue = balance;
             bw.paidPercentage = (total > 0) ? ((paid / total) * 100).setScale(0) : 0;
+            bw.originalCurrency = b.CurrencyIsoCode;
+
+            if (targetCurrency != null && targetCurrency != b.CurrencyIsoCode) {
+                bw.convertedTotal = CurrencyConversionService.convertAmount(total, b.CurrencyIsoCode, targetCurrency);
+                bw.convertedPaid = CurrencyConversionService.convertAmount(paid, b.CurrencyIsoCode, targetCurrency);
+                bw.convertedBalance = CurrencyConversionService.convertAmount(balance, b.CurrencyIsoCode, targetCurrency);
+                bw.displayCurrency = targetCurrency;
+            } else {
+                bw.convertedTotal = total;
+                bw.convertedPaid = paid;
+                bw.convertedBalance = balance;
+                bw.displayCurrency = b.CurrencyIsoCode;
+            }
 
             bw.thumbnailUrl = propertyIdToThumbnailUrl.get(b.Property__c);
 

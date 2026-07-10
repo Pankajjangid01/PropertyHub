@@ -15,7 +15,6 @@ public without sharing class PortalUserProvisioningService {
             return;
         }
 
-        // Find which of these Contacts already have a Portal User (avoid duplicates)
         Set<Id> contactsWithExistingUser = new Set<Id>();
         for (User u : [SELECT ContactId FROM User WHERE ContactId IN :contactIds]) {
             contactsWithExistingUser.add(u.ContactId);
@@ -29,16 +28,19 @@ public without sharing class PortalUserProvisioningService {
         }
 
         if (contactsNeedingUser.isEmpty()) {
-            return; // everyone already has portal access
+            return;
         }
 
         Id portalProfileId = getPortalProfileId();
         if (portalProfileId == null) {
-            return; // profile not found — safety guard, avoid crashing the booking approval
+            return;
         }
 
+        // Added MailingCountry (Contact's own address) so we can copy it onto the new User
         Map<Id, Contact> contactsToProvision = new Map<Id, Contact>(
-            [SELECT Id, FirstName, LastName, Email FROM Contact WHERE Id IN :contactsNeedingUser AND Email != null]
+            [SELECT Id, FirstName, LastName, Email, MailingCountry, Account.BillingCountry
+             FROM Contact
+             WHERE Id IN :contactsNeedingUser AND Email != null]
         );
 
         List<User> usersToInsert = new List<User>();
@@ -52,18 +54,23 @@ public without sharing class PortalUserProvisioningService {
             newUser.Email = con.Email;
             newUser.Username = con.Email + '.propertyhub';
             newUser.Alias = generateAlias(con.FirstName, con.LastName);
-            newUser.CommunityNickname = con.Id; // guarantees uniqueness
+            newUser.CommunityNickname = con.Id;
             newUser.TimeZoneSidKey = 'Asia/Kolkata';
             newUser.LocaleSidKey = 'en_IN';
             newUser.EmailEncodingKey = 'UTF-8';
             newUser.LanguageLocaleKey = 'en_US';
             newUser.IsActive = true;
 
+            // Prefer the Contact's own Country; fall back to the Account's Country if Contact's is blank
+            newUser.Country = String.isNotBlank(con.MailingCountry)
+                ? con.MailingCountry
+                : con.Account.BillingCountry;
+
             usersToInsert.add(newUser);
         }
 
         if (!usersToInsert.isEmpty()) {
-            insert usersToInsert; // triggers Salesforce's built-in "set your password" welcome email automatically
+            insert usersToInsert;
         }
     }
 

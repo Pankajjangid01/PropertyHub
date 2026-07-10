@@ -52,6 +52,16 @@
                                 onchange={handleEmailChange}>
                             </lightning-input>
                         </div>
+                        
+                        <div class="slds-col slds-size_1-of-1 slds-medium-size_1-of-2">
+                            <lightning-combobox
+                                label="Country"
+                                value={country}
+                                options={countryOptions}
+                                required
+                                onchange={handleCountryChange}>
+                            </lightning-combobox>
+                        </div>
 
                         <div class="slds-col slds-size_1-of-1">
                             <lightning-textarea

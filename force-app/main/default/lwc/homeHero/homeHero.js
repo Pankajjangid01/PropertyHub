@@ -1,6 +1,12 @@
 import { api, LightningElement, wire } from 'lwc';
+import LOCALE from '@salesforce/i18n/locale';
 import { NavigationMixin } from 'lightning/navigation';
+import { subscribe, unsubscribe, MessageContext } from 'lightning/messageService';
+import CurrencyChangeChannel from '@salesforce/messageChannel/CurrencyChangeChannel__c';
 import getFeaturedProjects from '@salesforce/apex/ProjectShowcaseController.getFeaturedProjects';
+
+const STORAGE_KEY = 'preferredCurrency';
+const FILTERS = ['All', 'Planning', 'Under Construction', 'Ready to Move', 'Completed'];
 
 export default class HomeHero extends NavigationMixin(LightningElement) {
     @api homePageName = 'Home';
@@ -13,17 +19,46 @@ export default class HomeHero extends NavigationMixin(LightningElement) {
 
     projects = [];
     error;
+    preferredCurrency;
+    subscription;
+    activeFilter = 'All';
 
-    @wire(getFeaturedProjects)
+    @wire(MessageContext)
+    messageContext;
+
+    connectedCallback() {
+        this.preferredCurrency = window.localStorage.getItem(STORAGE_KEY) || null;
+        this.subscribeToCurrencyChange();
+    }
+
+    disconnectedCallback() {
+        unsubscribe(this.subscription);
+        this.subscription = null;
+    }
+
+    subscribeToCurrencyChange() {
+        if (this.subscription) {
+            return;
+        }
+        this.subscription = subscribe(
+            this.messageContext,
+            CurrencyChangeChannel,
+            (message) => {
+                this.preferredCurrency = message.currencyCode;
+            }
+        );
+    }
+
+    @wire(getFeaturedProjects, { preferredCurrency: '$preferredCurrency' })
     wiredProjects({ data, error }) {
         console.log('--- [DEBUG homeHero] Data payload:', data ? JSON.parse(JSON.stringify(data)) : 'null');
         console.log('--- [DEBUG homeHero] Error payload:', error ? JSON.parse(JSON.stringify(error)) : 'null');
-        
+
         if (data) {
             this.projects = data.map((project) => ({
                 ...project,
                 propertyCountLabel: `${project.propertyCount || 0} available properties`,
-                priceLabel: this.formatPriceRange(project.minPrice, project.maxPrice),
+                priceLabel: this.formatPriceRange(project.minPrice, project.maxPrice, project.displayCurrency),
                 statusLabel: project.projectStatus || 'Open',
                 locationLabel: project.location || 'Location to be updated',
                 builderLabel: project.builderName || 'Builder information coming soon'
@@ -39,12 +74,28 @@ export default class HomeHero extends NavigationMixin(LightningElement) {
         return this.projects && this.projects.length > 0;
     }
 
+    get filterOptions() {
+        return FILTERS.map((f) => ({
+            label: f,
+            value: f,
+            class: f === this.activeFilter ? 'active' : ''
+        }));
+    }
+
     get featuredProjects() {
-        return this.projects.slice(0, 6);
+        if (!this.projects) return [];
+        if (this.activeFilter === 'All') {
+            return this.projects;
+        }
+        return this.projects.filter(p => p.projectStatus === this.activeFilter);
     }
 
     get showProjectEmptyState() {
-        return !this.error && !this.hasProjects;
+        return !this.error && this.featuredProjects.length === 0;
+    }
+
+    handleFilterClick(event) {
+        this.activeFilter = event.currentTarget.dataset.value;
     }
 
     handleBrowseClick() {
@@ -72,21 +123,23 @@ export default class HomeHero extends NavigationMixin(LightningElement) {
         });
     }
 
-    formatPriceRange(minPrice, maxPrice) {
+    formatPriceRange(minPrice, maxPrice, currencyCode) {
         if (minPrice === null || minPrice === undefined) {
             return 'Price on request';
         }
 
         if (maxPrice === null || maxPrice === undefined || minPrice === maxPrice) {
-            return `Starting at ${this.formatCurrency(minPrice)}`;
+            return `Starting at ${this.formatCurrency(minPrice, currencyCode)}`;
         }
 
-        return `${this.formatCurrency(minPrice)} - ${this.formatCurrency(maxPrice)}`;
+        return `${this.formatCurrency(minPrice, currencyCode)} - ${this.formatCurrency(maxPrice, currencyCode)}`;
     }
 
-    formatCurrency(amount) {
-        return `Rs. ${new Intl.NumberFormat('en-IN', {
+    formatCurrency(amount, currencyCode) {
+        return new Intl.NumberFormat(LOCALE, {
+            style: 'currency',
+            currency: currencyCode || 'USD',
             maximumFractionDigits: 0
-        }).format(amount)}`;
+        }).format(amount);
     }
 }

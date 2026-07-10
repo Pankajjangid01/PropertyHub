@@ -1,0 +1,81 @@
+:host {
+    display: block;
+    --ph-brand: #1f8a4c;
+    --ph-brand-deep: #0e4a27;
+    --ph-brand-light: #edf6f0;
+    --ph-brand-gradient: linear-gradient(135deg, #249d57 0%, #146c39 100%);
+    font-family: 'Inter', sans-serif;
+}
+
+.currency-switcher-container {
+    display: flex;
+    justify-content: flex-end;
+    margin: -1.2rem auto 2rem;
+    max-width: 1400px;
+    padding: 0 1.5rem;
+    position: relative;
+    z-index: 90;
+}
+
+.switcher-box {
+    display: flex;
+    align-items: center;
+    background: #063a36; /* Matching portal deep theme */
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 20px;
+    padding: 0.4rem 1.2rem;
+    gap: 8px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.switcher-box:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+    transform: translateY(-1px);
+}
+
+.switcher-icon {
+    --sds-c-icon-color-foreground-default: #1f8a4c;
+    --sds-c-icon-color-foreground: #1f8a4c;
+}
+
+.switcher-label {
+    color: #ffffff;
+    font-size: 0.9rem;
+    font-weight: 600;
+    opacity: 0.85;
+    letter-spacing: 0.02em;
+}
+
+.custom-select {
+    background: transparent;
+    border: none;
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 0.95rem;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    appearance: none;
+    -webkit-appearance: none;
+    padding-right: 18px;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right center;
+    background-size: 16px;
+    min-width: 60px;
+}
+
+.custom-select option {
+    background: #063a36;
+    color: #ffffff;
+    font-weight: 600;
+}
+
+@media (max-width: 900px) {
+    .currency-switcher-container {
+        justify-content: center;
+        margin-top: 1rem;
+    }
+}
